@@ -3,7 +3,14 @@ import { TkSegmented, TkMessage, magicIcon, isClient, useCommon } from "vitepres
 import BaseTemplate from "@teek/components/theme/ThemeEnhance/src/components/BaseTemplate.vue";
 import { nextTick, ref, watch } from "vue";
 import { useClipboard, useStorage } from "@teek/composables";
-import { teekBlogFullConfig } from "../config/teekConfig";
+import {
+  teekDocConfig,
+  teekBlogConfig,
+  teekBlogParkConfig,
+  teekBlogFullConfig,
+  teekBlogBodyConfig,
+  teekBlogCardConfig,
+} from "../config/teekConfig";
 
 const ns = "config-switch";
 const tipInfo = {
@@ -23,26 +30,34 @@ const tipInfo = {
   ],
 };
 const segmentedOptions = [
+  { value: "doc", label: "文档预设", title: "文档默认风格" },
+  { value: "blog", label: "博客预设", title: "首页默认风格" },
+  { value: "blog-part", label: "博客小图", title: "首页 Banner 小图" },
   { value: "blog-full", label: "博客大图", title: "首页 Banner 大图 + 评论" },
+  { value: "blog-body", label: "博客全图", title: "全站背景图 + 碎片化文章页" },
+  { value: "blog-card", label: "博客卡片", title: "首页卡片文章列表 + 左侧卡片栏列表" },
 ];
 
 const emit = defineEmits<{
-  switch: [config: typeof teekBlogFullConfig, style: string];
+  switch: [config: typeof teekDocConfig, style: string];
 }>();
 
-const fixedStyle = "blog-full";
-const themeStyle = defineModel({ default: fixedStyle });
-const currentStyle = useStorage("tk:configStyle", fixedStyle);
+const themeStyle = defineModel({ default: "blog-full" });
+const currentStyle = useStorage("tk:configStyle", "blog-full");
 const teekConfig = ref(teekBlogFullConfig);
 
 const { copy, copied } = useClipboard();
 const { isMobile } = useCommon();
 
 const update = async (style: string) => {
-  if (style !== fixedStyle) currentStyle.value = fixedStyle;
-  if (themeStyle.value !== fixedStyle) themeStyle.value = fixedStyle;
-  teekConfig.value = teekBlogFullConfig;
-  emit("switch", teekConfig.value, fixedStyle);
+  if (style === "doc") teekConfig.value = teekDocConfig;
+  if (style === "blog") teekConfig.value = teekBlogConfig;
+  if (style === "blog-part") teekConfig.value = teekBlogParkConfig;
+  if (style === "blog-full") teekConfig.value = teekBlogFullConfig;
+  if (style === "blog-body") teekConfig.value = teekBlogBodyConfig;
+  if (style === "blog-card") teekConfig.value = teekBlogCardConfig;
+
+  emit("switch", teekConfig.value, style);
 
   await nextTick();
 
@@ -50,7 +65,7 @@ const update = async (style: string) => {
   const navDom = document.querySelector(".VPNavBar") as HTMLElement;
 
   // 兼容 Teek Banner 样式
-  if (teekConfig.value.banner?.enabled !== false) {
+  if (["blog-full", "blog-body", "blog-card"].includes(style) && teekConfig.value.banner?.enabled !== false) {
     navDom?.classList.add("full-img-nav-bar");
   } else navDom?.classList.remove("full-img-nav-bar");
 };
