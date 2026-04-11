@@ -37,6 +37,7 @@ const imgSrcList = computed(() => {
   if (!isCoverVisible.value) return [];
   return [post.frontmatter.coverImg || postConfig.value.defaultCoverImg || []].flat();
 });
+const coverImg = computed(() => imgSrcList.value[Math.floor(Math.random() * imgSrcList.value.length)]);
 const excerpt = computed(
   () => post.frontmatter.description || post.excerpt || (postConfig.value.showCapture && post.capture)
 );
@@ -61,7 +62,7 @@ const isShowInfo = computed(() => {
 
     <div v-if="imgSrcList.length" :class="ns.e('cover-img')">
       <a :href="postUrl" :alt="post.title">
-        <img :src="withBase(imgSrcList[0])" class="cover-img" />
+        <img :src="withBase(coverImg)" class="cover-img" />
       </a>
     </div>
 
