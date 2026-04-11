@@ -1,5 +1,5 @@
 {
-  "installCommand": "pnpm install --no-frozen-lockfile",
+  "installCommand": "corepack enable && corepack prepare pnpm@10.17.1 --activate && pnpm install --no-frozen-lockfile",
   "buildCommand": "pnpm docs:build",
   "outputDirectory": "docs/.vitepress/dist"
 }
