@@ -11,12 +11,11 @@ hero:
   actions:
     - theme: brand
       text: 开始阅读
-      link: /guide/quickstart
+      link: /frontend/vue/reactive
     - theme: alt
-      text: 知识导航
       link: /reference/config
   image:
-    src: /blog/bg1.webp
+    src: https://cdn.jsdelivr.net/gh/shawalarik/alarik-assets@master/banner/4k/banner24.jpg
     alt: Alarik Blog
 
 features:
