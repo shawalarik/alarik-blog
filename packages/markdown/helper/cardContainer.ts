@@ -55,7 +55,7 @@ export const createCardContainer = <D extends Record<string, any>, C extends Rec
   const { type, className, beforeHtmlRender, htmlRender, afterHtmlRender, transformHtml } = option;
 
   // 注册容器
-  md.use(container, type, {});
+  md.use(container as Parameters<MarkdownIt["use"]>[0], type, {});
 
   // 注册成功后，就会监听到 container_xx_open，其中 xx 为注册的容器名
   md.renderer.rules[`container_${type}_open`] = (tokens, idx) => {

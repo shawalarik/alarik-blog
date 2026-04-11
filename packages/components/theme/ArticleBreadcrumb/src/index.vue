@@ -98,31 +98,6 @@ const resolveModuleTitle = (path: string, fallback: string) => {
   return fallback;
 };
 
-const resolveNavTitle = (path: string, fallback: string) => {
-  const currentUrl = normalizeUrl(resolveBreadcrumbUrl(path));
-  if (!currentUrl) return fallback;
-
-  const navSource = theme.value.nav;
-  const navItems = Array.isArray(navSource)
-    ? navSource
-    : Object.values(navSource || {}).flatMap((item: any) => item?.nav || item || []);
-
-  const visit = (items: any[]): string => {
-    for (const item of items || []) {
-      if (!item) continue;
-      const itemLink = normalizeUrl(item.link || "");
-      if (itemLink && itemLink === currentUrl && item.text) return item.text;
-      if (Array.isArray(item.items) && item.items.length) {
-        const found = visit(item.items);
-        if (found) return found;
-      }
-    }
-    return "";
-  };
-
-  return visit(navItems as any[]) || fallback;
-};
-
 const isPathPrefix = (fullPath: string, candidate: string) =>
   fullPath === candidate || fullPath.startsWith(`${candidate}/`);
 
