@@ -28,7 +28,7 @@ articleBanner: false
 
 欢迎交流与协作：
 
-- GitHub：<https://github.com/Alarik>
+- GitHub：<https://gitee.com/Alarikshaw>
 - 主题项目：<https://github.com/Kele-Bingtang/vitepress-theme-teek>
 
 ## 致谢
