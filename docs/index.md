@@ -42,19 +42,6 @@ features:
 
 在右上角 <TkIcon :icon="readingIcon" :size="20" /> 图标的 <mark>配置切换</mark> 区域，你仍可以切换不同展示风格，选择最适合阅读与沉淀的视图。
 
-## 💬 交流与连接
-
-如果你对某篇内容有想法，欢迎通过 GitHub 与我交流：
-
-- 主页：[Alarik GitHub](https://github.com/Alarik)
-- 主题来源：[VitePress Theme Teek](https://github.com/Kele-Bingtang/vitepress-theme-teek)
-
-也欢迎在你的学习或项目中复用这里的方法与思路。
-
-<img src="https://gcore.jsdelivr.net/gh/Kele-Bingtang/static/index/20250412000919.png" alt="添加我微信备注「进群」" style="width: 180px;" />
-
-如果图片链接失效，你可以优先通过 GitHub 联系我。
-
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { useData } from "vitepress";

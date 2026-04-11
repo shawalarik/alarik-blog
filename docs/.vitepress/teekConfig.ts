@@ -3,6 +3,7 @@ import { defineTeekConfig } from "../../packages/config";
 import { version } from "../../packages/teek/version";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { assetConfig } from "./assetConfig";
 
 // Teek 在线主题包引用（需安装 Teek 在线版本）
 // import { defineTeekConfig } from "vitepress-theme-teek/config";
@@ -154,15 +155,21 @@ function collectLeaves(items: any[]): { text: string; link: string }[] {
   return leaves;
 }
 
+const CDN_BASE = assetConfig.cdnBase;
+const COVER_COUNT = assetConfig.coverCount;
+const COVER_IMAGES = Array.from({ length: COVER_COUNT }, (_, i) => `${CDN_BASE}/cover/cover${i + 1}.jpg`);
+const DEPRECATED_DIRS = assetConfig.deprecatedDirs;
+const DEPRECATED_GLOBS = DEPRECATED_DIRS.map(dir => `**/${dir}/**`);
+
 export const teekConfig = defineTeekConfig({
   sidebarTrigger: true,
   author: { name: "Alarik", link: "https://alariks.com" },
   blogger: {
     name: "Alarik",
     slogan: "持续学习，持续构建，把零散知识沉淀成可复用的方法论",
-    avatar: "https://testingcf.jsdelivr.net/gh/Kele-Bingtang/static/user/avatar1.png",
+    avatar: `${CDN_BASE}/avatar/avatar.jpg`,
     shape: "circle-rotate",
-    circleBgImg: "/blog/bg4.webp",
+    circleBgImg: `${CDN_BASE}/social/circle1.jpg`,
     color: "#ffffff",
     circleSize: 120,
     status: {
@@ -185,6 +192,7 @@ export const teekConfig = defineTeekConfig({
   },
   post: {
     showCapture: true,
+    defaultCoverImg: COVER_IMAGES,
   },
   articleBanner: {
     enabled: true,
@@ -208,9 +216,14 @@ export const teekConfig = defineTeekConfig({
     },
   },
   vitePlugins: {
+    fileContentLoaderIgnore: DEPRECATED_GLOBS,
+    docAnalysisOption: {
+      ignoreList: DEPRECATED_DIRS,
+    },
     sidebarOption: {
       initItems: false,
       ignoreIndexMd: true,
+      ignoreList: DEPRECATED_DIRS,
       /**
        * 将 Teek 自动生成的多层侧边栏压缩为两级：
        *   一级 = 包含文章的子目录（使用 index.md 的 title 作为标题）
@@ -238,7 +251,7 @@ export const teekConfig = defineTeekConfig({
   },
   markdown: {
     demo: {
-      githubUrl: "https://github.com/Alarik",
+      githubUrl: "https://github.com/shawalarik",
     },
   },
   // siteAnalytics: [

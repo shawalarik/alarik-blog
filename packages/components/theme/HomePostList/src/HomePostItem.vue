@@ -33,7 +33,15 @@ const excerpt = computed(
   () => post.frontmatter.description || post.excerpt || (postConfig.value.showCapture && post.capture)
 );
 
-const imgSrcList = computed(() => [post.frontmatter.coverImg || postConfig.value.defaultCoverImg || []].flat());
+const hideCoverPrefixes = ["01.指南/", "10.配置/", "15.主题开发/", "20.资源/", "30.生态/"];
+const isCoverVisible = computed(() => {
+  const relativePath = String(post.relativePath || "").replace(/\\/g, "/");
+  return !hideCoverPrefixes.some(prefix => relativePath.startsWith(prefix));
+});
+const imgSrcList = computed(() => {
+  if (!isCoverVisible.value) return [];
+  return [post.frontmatter.coverImg || postConfig.value.defaultCoverImg || []].flat();
+});
 
 const coverImgMap = computed(() => {
   const imgSrc = imgSrcList.value[Math.floor(Math.random() * imgSrcList.value.length)];

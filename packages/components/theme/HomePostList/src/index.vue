@@ -2,9 +2,9 @@
 import type { TkPaginationProps } from "@teek/components/common/Pagination";
 import type { Post, TkContentData } from "@teek/config";
 import { reactive, ref, watch, nextTick, computed, onMounted, watchEffect } from "vue";
-import { useRoute, useData } from "vitepress";
+import { useData } from "vitepress";
 import { isClient, removeUnit } from "@teek/helper";
-import { useNamespace, useLocale, useWindowSize, useWindowTransition } from "@teek/composables";
+import { useNamespace, useLocale, useWindowSize, useWindowTransition, useVpRouter } from "@teek/composables";
 import { emptyIcon } from "@teek/static";
 import { useTeekConfig, usePosts, useWindowTransitionConfig } from "@teek/components/theme/ConfigProvider";
 import { TkPagination } from "@teek/components/common/Pagination";
@@ -42,7 +42,7 @@ const isPaging = defineModel({ default: false });
 const defaultPageSize = computed(() => (postConfig.value.postStyle === "list" ? 10 : 15));
 const pageSize = computed(() => pageConfig.value.pageSize || defaultPageSize.value);
 
-const route = useRoute();
+const { route, bindAfterRouteChange } = useVpRouter();
 const currentPosts = ref<TkContentData[]>([]);
 const totalPostsCount = ref(0);
 
@@ -84,6 +84,7 @@ const updateData = () => {
 };
 
 watch(() => route.path, updateData, { immediate: true });
+bindAfterRouteChange("home-post-list-sync", updateData);
 
 /**
  * 切换分页时，记录到 URL 上

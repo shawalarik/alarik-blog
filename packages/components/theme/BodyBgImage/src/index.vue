@@ -15,7 +15,7 @@ const { getTeekConfigRef } = useTeekConfig();
 const bodyBgImgConfig = getTeekConfigRef<BodyBgImg>("bodyBgImg", {
   imgSrc: undefined,
   imgOpacity: 1,
-  imgInterval: 15000,
+  imgInterval: 5000,
   imgShuffle: false,
   mask: false,
   maskBg: "rgba(0, 0, 0, 0.2)",

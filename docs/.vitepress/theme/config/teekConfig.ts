@@ -1,4 +1,11 @@
 import type { TeekConfig } from "@teek/config";
+import { assetConfig } from "../../assetConfig";
+
+const CDN_BASE = assetConfig.cdnBase;
+const BANNER_4K_COUNT = assetConfig.banner4kCount;
+const BANNER_4K_IMAGES = Array.from({ length: BANNER_4K_COUNT }, (_, i) => `${CDN_BASE}/banner/4k/banner${i + 1}.jpg`);
+const BANNER_IMG_INTERVAL = assetConfig.bannerImgInterval;
+const BANNER_IMG_SHUFFLE = assetConfig.bannerImgShuffle;
 
 // 文档配置
 export const teekDocConfig: TeekConfig = {
@@ -20,33 +27,22 @@ const teekBlogCommonConfig: TeekConfig = {
   },
   footerInfo: {
     customHtml: `<span id="runtime"></span>`, // 需要搭配 .vitepress/theme/helper/useRuntime.ts 使用
-    topMessage: [
-      `<span><img alt="VitePress" src="https://liuyuyang.net/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fanimals.65eaf6e3.webp&w=750&q=75" style="width: 750px; height: 80px"><span/>`,
-
-      `<a title="Github release" target="_blank" href="https://github.com/Kele-Bingtang/vitepress-theme-teek/releases" style="margin-right: 10px;">
-        <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/Kele-Bingtang/vitepress-theme-teek?logo=github">
-      </a>
-
-      <a title="Npm Version" target="_blank" href="https://www.npmjs.com/package/vitepress-theme-teek" style="margin-right: 10px;">
-        <img src="https://img.shields.io/npm/v/vitepress-theme-teek?logo=npm&color=%09%23bf00ff" alt="https://img.shields.io/npm/v/vitepress-theme-teek?color=%09%23bf00ff">
-      </a>
-
-      <img src="https://img.shields.io/badge/v18.x-x?logo=node.js&label=node" alt="node version" style="margin-right: 10px; margin-bottom: 10px;">
-      <img src="https://img.shields.io/github/languages/code-size/Kele-Bingtang/vitepress-theme-teek?logo=Visual Studio Code&logoColor=blue" alt="GitHub code size in bytes" style="margin-right: 10px; margin-bottom: 10px;">
-
-      <a title="GitHub Discussions" target="_blank" href="https://github.com/Kele-Bingtang/vitepress-theme-teek/discussions" style="margin-right: 10px;">
-        <img src="https://img.shields.io/github/discussions/Kele-Bingtang/vitepress-theme-teek?color=9cf&logo=github" alt="GitHub Discussions">
-      </a>
-
-      <a title="MIT License" target="_blank" href="https://github.com/Kele-Bingtang/vitepress-theme-teek/blob/master/LICENSE" style="margin-right: 10px;">
-        <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT License">
-      </a>`,
-    ],
+    bottomMessage: [`主体备案：黔ICP备19002017号`],
+    icpRecord: {
+      name: "黔ICP备19002017号-8",
+      link: "https://beian.miit.gov.cn",
+    },
   },
   docAnalysis: {
-    createTime: "2025-03-23",
+    createTime: "2026-1-19",
     statistics: {
-      provider: "busuanzi",
+      provider: "vercount",
+      siteView: true,
+      pageView: true,
+      permalink: true,
+      tryRequest: true,
+      tryCount: 5,
+      tryIterationTime: 2000,
     },
   },
   friendLink: {
@@ -106,12 +102,12 @@ const teekBlogCommonConfig: TeekConfig = {
     {
       icon: "icon-github",
       name: "GitHub",
-      link: "https://github.com/kele-bingtang",
+      link: "https://github.com/shawalarik",
     },
     {
       icon: "icon-gitee",
       name: "Gitee",
-      link: "https://gitee.com/kele-bingtang",
+      link: "https://gitee.com/Alarikshaw",
     },
   ],
 };
@@ -121,7 +117,7 @@ export const teekBlogConfig: TeekConfig = {
   ...teekBlogCommonConfig,
   banner: {
     name: "🎉 Alarik Blog",
-    description: "故事由我书写，旅程由你见证，传奇由她聆听 —— 来自 Young Kbt",
+    description: "大雨落幽燕，白浪滔天 —— 毛泽东《浪淘沙·北戴河》",
     bgStyle: "partImg",
   },
 };
@@ -132,11 +128,18 @@ export const teekBlogParkConfig: TeekConfig = {
   banner: {
     name: "🎉 Alarik Blog",
     bgStyle: "partImg",
-    imgSrc: ["/blog/bg1.webp", "/blog/bg2.webp", "/blog/bg3.webp"],
+    imgSrc: BANNER_4K_IMAGES,
+    imgInterval: BANNER_IMG_INTERVAL,
+    imgShuffle: BANNER_IMG_SHUFFLE,
     description: [
-      "故事由我书写，旅程由你见证，传奇由她聆听 —— 来自 Young Kbt",
-      "积跬步以至千里，致敬每个爱学习的你 —— 来自 Evan Xu",
-      "这一生波澜壮阔或是不惊都没问题 —— 来自 Weibw",
+      "大雨落幽燕，白浪滔天 —— 毛泽东《浪淘沙·北戴河》",
+      "莫道桑榆晚，为霞尚满天 —— 刘禹锡《酬乐天咏老见示》",
+      "长风破浪会有时，直挂云帆济沧海 —— 李白《行路难》",
+      "路漫漫其修远兮，吾将上下而求索 —— 屈原《离骚》",
+      "会当凌绝顶，一览众山小 —— 杜甫《望岳》",
+      "劝君莫惜金缕衣，劝君惜取少年时 —— 杜秋娘《金缕衣》",
+      "大鹏一日同风起，扶摇直上九万里 —— 李白《上李邕》",
+      "千淘万漉虽辛苦，吹尽狂沙始到金 —— 刘禹锡《浪淘沙》",
     ],
     descStyle: "switch",
   },
@@ -168,11 +171,18 @@ export const teekBlogFullConfig: TeekConfig = {
   banner: {
     name: "🎉 Alarik Blog",
     bgStyle: "fullImg",
-    imgSrc: ["/blog/bg1.webp", "/blog/bg2.webp", "/blog/bg3.webp"],
+    imgSrc: BANNER_4K_IMAGES,
+    imgInterval: BANNER_IMG_INTERVAL,
+    imgShuffle: BANNER_IMG_SHUFFLE,
     description: [
-      "故事由我书写，旅程由你见证，传奇由她聆听 —— 来自 Young Kbt",
-      "积跬步以至千里，致敬每个爱学习的你 —— 来自 Evan Xu",
-      "这一生波澜壮阔或是不惊都没问题 —— 来自 Weibw",
+      "大雨落幽燕，白浪滔天 —— 毛泽东《浪淘沙·北戴河》",
+      "莫道桑榆晚，为霞尚满天 —— 刘禹锡《酬乐天咏老见示》",
+      "长风破浪会有时，直挂云帆济沧海 —— 李白《行路难》",
+      "路漫漫其修远兮，吾将上下而求索 —— 屈原《离骚》",
+      "会当凌绝顶，一览众山小 —— 杜甫《望岳》",
+      "劝君莫惜金缕衣，劝君惜取少年时 —— 杜秋娘《金缕衣》",
+      "大鹏一日同风起，扶摇直上九万里 —— 李白《上李邕》",
+      "千淘万漉虽辛苦，吹尽狂沙始到金 —— 刘禹锡《浪淘沙》",
     ],
     descStyle: "types",
   },
@@ -207,14 +217,21 @@ export const teekBlogBodyConfig: TeekConfig = {
   ...teekBlogCommonConfig,
   pageStyle: "segment-nav",
   bodyBgImg: {
-    imgSrc: ["/blog/bg1.webp", "/blog/bg2.webp", "/blog/bg3.webp"],
+    imgSrc: BANNER_4K_IMAGES,
+    imgInterval: BANNER_IMG_INTERVAL,
+    imgShuffle: BANNER_IMG_SHUFFLE,
   },
   banner: {
     name: "🎉 Alarik Blog",
     description: [
-      "故事由我书写，旅程由你见证，传奇由她聆听 —— 来自 Young Kbt",
-      "积跬步以至千里，致敬每个爱学习的你 —— 来自 Evan Xu",
-      "这一生波澜壮阔或是不惊都没问题 —— 来自 Weibw",
+      "大雨落幽燕，白浪滔天 —— 毛泽东《浪淘沙·北戴河》",
+      "莫道桑榆晚，为霞尚满天 —— 刘禹锡《酬乐天咏老见示》",
+      "长风破浪会有时，直挂云帆济沧海 —— 李白《行路难》",
+      "路漫漫其修远兮，吾将上下而求索 —— 屈原《离骚》",
+      "会当凌绝顶，一览众山小 —— 杜甫《望岳》",
+      "劝君莫惜金缕衣，劝君惜取少年时 —— 杜秋娘《金缕衣》",
+      "大鹏一日同风起，扶摇直上九万里 —— 李白《上李邕》",
+      "千淘万漉虽辛苦，吹尽狂沙始到金 —— 刘禹锡《浪淘沙》",
     ],
     descStyle: "types",
   },
@@ -235,11 +252,18 @@ export const teekBlogCardConfig: TeekConfig = {
   banner: {
     name: "🎉 Alarik Blog",
     bgStyle: "fullImg",
-    imgSrc: ["/blog/bg1.webp", "/blog/bg2.webp", "/blog/bg3.webp"],
+    imgSrc: BANNER_4K_IMAGES,
+    imgInterval: BANNER_IMG_INTERVAL,
+    imgShuffle: BANNER_IMG_SHUFFLE,
     description: [
-      "故事由我书写，旅程由你见证，传奇由她聆听 —— 来自 Young Kbt",
-      "积跬步以至千里，致敬每个爱学习的你 —— 来自 Evan Xu",
-      "这一生波澜壮阔或是不惊都没问题 —— 来自 Weibw",
+      "大雨落幽燕，白浪滔天 —— 毛泽东《浪淘沙·北戴河》",
+      "莫道桑榆晚，为霞尚满天 —— 刘禹锡《酬乐天咏老见示》",
+      "长风破浪会有时，直挂云帆济沧海 —— 李白《行路难》",
+      "路漫漫其修远兮，吾将上下而求索 —— 屈原《离骚》",
+      "会当凌绝顶，一览众山小 —— 杜甫《望岳》",
+      "劝君莫惜金缕衣，劝君惜取少年时 —— 杜秋娘《金缕衣》",
+      "大鹏一日同风起，扶摇直上九万里 —— 李白《上李邕》",
+      "千淘万漉虽辛苦，吹尽狂沙始到金 —— 刘禹锡《浪淘沙》",
     ],
     descStyle: "types",
   },

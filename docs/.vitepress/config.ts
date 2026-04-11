@@ -18,6 +18,7 @@ export default defineConfig({
   extends: teekConfig,
   title: "Alarik Blog",
   description: description,
+  srcExclude: ["01.指南/**", "10.配置/**", "15.主题开发/**", "20.资源/**", "30.生态/**"],
   cleanUrls: false,
   lastUpdated: true,
   lang: "zh-CN",
@@ -372,30 +373,30 @@ export default defineConfig({
           },
         ]
       },
-      {
-        text: "站点信息",
-        items: [
-          {
-            text: "博客配置",
-            items: [
-              { text: "当前博客配置", link: "/reference/config", activeMatch: "/10.配置/" },
-              { text: "博客自定义开发", link: "/develop/intro", activeMatch: "/15.主题开发/" },
-              { text: "Components 组件", link: "/ecosystem/components" },
-              { text: "运行时 API", link: "/ecosystem/runtime-api" },
-              { text: "Helper 工具", link: "/ecosystem/helper" },
-              { text: "Composables 函数", link: "/ecosystem/composables" },
-              { text: "Markdown 工具链", link: "/ecosystem/md-plugin-utils" }
-            ]
-          },
-          {
-            text: "日志信息",
-            items: [
-              { text: `主题版本：${version}`, link: "https://github.com/Kele-Bingtang/vitepress-theme-teek/releases" },
-              { text: "主题更新日志", link: "https://github.com/Kele-Bingtang/vitepress-theme-teek/blob/dev/CHANGELOG.md" },
-            ],
-          },
-        ],
-      },
+      // {
+      //   text: "站点信息",
+      //   items: [
+      //     {
+      //       text: "博客配置",
+      //       items: [
+      //         { text: "当前博客配置", link: "/reference/config", activeMatch: "/10.配置/" },
+      //         { text: "博客自定义开发", link: "/develop/intro", activeMatch: "/15.主题开发/" },
+      //         { text: "Components 组件", link: "/ecosystem/components" },
+      //         { text: "运行时 API", link: "/ecosystem/runtime-api" },
+      //         { text: "Helper 工具", link: "/ecosystem/helper" },
+      //         { text: "Composables 函数", link: "/ecosystem/composables" },
+      //         { text: "Markdown 工具链", link: "/ecosystem/md-plugin-utils" }
+      //       ]
+      //     },
+      //     {
+      //       text: "日志信息",
+      //       items: [
+      //         { text: `主题版本：${version}`, link: "https://github.com/Kele-Bingtang/vitepress-theme-teek/releases" },
+      //         { text: "主题更新日志", link: "https://github.com/Kele-Bingtang/vitepress-theme-teek/blob/dev/CHANGELOG.md" },
+      //       ],
+      //     },
+      //   ],
+      // },
       {
         text: "索引",
         items: [

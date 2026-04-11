@@ -12,7 +12,7 @@ export interface BodyBgImg {
   /**
    * body 当多张背景图时（imgSrc 为数组），设置切换时间，单位：毫秒
    *
-   * @default 15000 (15秒)
+   * @default 5000 (5秒)
    */
   imgInterval?: number;
   /**

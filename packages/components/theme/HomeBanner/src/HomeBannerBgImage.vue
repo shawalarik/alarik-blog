@@ -16,7 +16,7 @@ const { getTeekConfigRef } = useTeekConfig();
 const bannerConfig = getTeekConfigRef<Required<Banner>>("banner", {
   bgStyle: undefined,
   imgSrc: undefined,
-  imgInterval: 15000,
+  imgInterval: 5000,
   imgShuffle: false,
   mask: true,
   maskBg: "rgba(0, 0, 0, 0.4)",
