@@ -4,6 +4,9 @@
   "type": "module",
   "private": true,
   "packageManager": "pnpm@10.7.1",
+  "engines": {
+    "node": "20.x"
+  },
 	"scripts": {
 		"preinstall": "npx only-allow pnpm",
 		"build": "pnpm run clean && pnpm run to:build build",
