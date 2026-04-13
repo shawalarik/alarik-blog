@@ -28,7 +28,7 @@ const articleConfig = getTeekConfigRef<ArticleAnalyze>("articleAnalyze", { showI
 
 const postUrl = post.url && withBase(post.url);
 
-const hideCoverPrefixes = ["01.指南/", "10.配置/", "15.主题开发/", "20.资源/", "30.生态/"];
+const hideCoverPrefixes = ["@fragment", "01.指南/", "10.配置/", "15.主题开发/", "20.资源/", "30.生态/"];
 const isCoverVisible = computed(() => {
   const relativePath = String(post.relativePath || "").replace(/\\/g, "/");
   return !hideCoverPrefixes.some(prefix => relativePath.startsWith(prefix));

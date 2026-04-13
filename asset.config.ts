@@ -13,5 +13,5 @@ export const assetConfig: AssetConfig = {
   coverCount: 80,
   bannerImgInterval: 6000,
   bannerImgShuffle: true,
-  deprecatedDirs: ["01.指南", "10.配置", "15.主题开发", "20.资源", "30.生态"],
+  deprecatedDirs: ["@fragment", "01.指南", "10.配置", "15.主题开发", "20.资源", "30.生态"],
 };

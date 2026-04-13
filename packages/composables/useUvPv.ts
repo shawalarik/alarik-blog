@@ -89,7 +89,7 @@ const DEFAULT_YESTERDAY_DATA = {
  * @param options 配置项
  */
 export const useUvPv = (immediate = false, options: UseUvPvOptions = {}) => {
-  const { url, provider = "busuanzi", tryRequest = false, tryCount = 5, tryIterationTime = 2000, requestFn } = options;
+  const { url, provider = "vercount", tryRequest = false, tryCount = 5, tryIterationTime = 2000, requestFn } = options;
   const sitePv = ref(0);
   const siteUv = ref(0);
   const pagePv = ref(0);

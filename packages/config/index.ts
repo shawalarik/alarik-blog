@@ -23,7 +23,7 @@ export const defineTeekConfig = (config: TeekConfig & UserConfig<DefaultTheme.Co
 
   const head: HeadConfig[] = [];
 
-  if (teekConfig.docAnalysis?.statistics?.provider === "busuanzi") {
+  if (teekConfig.docAnalysis?.statistics?.provider === "vercount") {
     // 不蒜子 API 统计需要
     head.push(["meta", { name: "referrer", content: "no-referrer-when-downgrade" }]);
   }

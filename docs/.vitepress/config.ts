@@ -18,7 +18,7 @@ export default defineConfig({
   extends: teekConfig,
   title: "Alarik Blog",
   description: description,
-  srcExclude: ["01.指南/**", "10.配置/**", "15.主题开发/**", "20.资源/**", "30.生态/**"],
+  srcExclude: ["@fragment", "01.指南/**", "10.配置/**", "15.主题开发/**", "20.资源/**", "30.生态/**"],
   cleanUrls: false,
   lastUpdated: true,
   lang: "zh-CN",
