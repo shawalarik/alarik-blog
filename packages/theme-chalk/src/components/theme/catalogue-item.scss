@@ -43,7 +43,7 @@
 
 /* 叶子目录样式 */
 @include b(catalogue-item) {
-  width: 74%;
+  width: 99%;
   margin-bottom: 8px;
   a {
     color: getCssVar("theme-color");
