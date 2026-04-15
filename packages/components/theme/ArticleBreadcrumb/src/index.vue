@@ -128,6 +128,20 @@ const collectNavLinks = (items: any[]): string[] => {
   return links;
 };
 
+const findNavTitleByUrl = (items: any[], currentUrl: string): string => {
+  for (const item of items || []) {
+    if (!item) continue;
+    const text = item.text || "";
+    const itemLink = normalizeUrl(item.link || "");
+    if (text && itemLink && itemLink === currentUrl) return text;
+    if (Array.isArray(item.items) && item.items.length) {
+      const child = findNavTitleByUrl(item.items, currentUrl);
+      if (child) return child;
+    }
+  }
+  return "";
+};
+
 const resolveFirstSegmentTitle = (currentUrl: string, firstSegment: string, fallback: string) => {
   if (!currentUrl) return fallback;
   const navSource = theme.value.nav;
@@ -151,6 +165,54 @@ const resolveFirstSegmentTitle = (currentUrl: string, firstSegment: string, fall
   }
 
   return fallback;
+};
+
+const resolveNavTitleByCurrentUrl = (currentUrl: string, fallback: string) => {
+  if (!currentUrl) return fallback;
+  const navSource = theme.value.nav;
+  const navItems = Array.isArray(navSource)
+    ? navSource
+    : Object.values(navSource || {}).flatMap((item: any) => item?.nav || item || []);
+  return findNavTitleByUrl(navItems as any[], currentUrl) || fallback;
+};
+
+const normalizeSegment = (segment = "") => segment.toLowerCase().replace(/[\s_-]/g, "");
+const getPathSegments = (url = "") =>
+  normalizeUrl(url)
+    .replace(/^\/+|\/+$/g, "")
+    .split("/")
+    .filter(Boolean);
+
+const collectNavEntries = (items: any[]): Array<{ text: string; segments: string[] }> => {
+  const entries: Array<{ text: string; segments: string[] }> = [];
+  for (const item of items || []) {
+    if (!item) continue;
+    const text = item.text || "";
+    const link = item.link || "";
+    if (text && link) entries.push({ text, segments: getPathSegments(link) });
+    if (Array.isArray(item.items) && item.items.length) entries.push(...collectNavEntries(item.items));
+  }
+  return entries;
+};
+
+const resolveNavTitleBySegment = (segment: string, parentSegment: string, fallback: string) => {
+  if (!segment) return fallback;
+  const navSource = theme.value.nav;
+  const navItems = Array.isArray(navSource)
+    ? navSource
+    : Object.values(navSource || {}).flatMap((item: any) => item?.nav || item || []);
+  const navEntries = collectNavEntries(navItems as any[]);
+  const segmentNorm = normalizeSegment(segment);
+  const parentNorm = normalizeSegment(parentSegment);
+
+  const exactEntry = navEntries.find(({ segments }) => {
+    const last = normalizeSegment(segments[segments.length - 1] || "");
+    if (last !== segmentNorm) return false;
+    if (!parentNorm) return true;
+    return segments.some(part => normalizeSegment(part) === parentNorm);
+  });
+
+  return exactEntry?.text || fallback;
 };
 
 const breadcrumbList = computed(() => {
@@ -180,6 +242,20 @@ const breadcrumbList = computed(() => {
     last.fileName = resolveModuleTitle(last.path, last.fileName);
   }
 
+  // 仅在存在子目录层级时，才对中间层级做中文标题替换，避免普通三段面包屑被误处理
+  const hasSubDirectoryLevel = classifyList.length > 3;
+  if (hasSubDirectoryLevel) {
+    classifyList.forEach((item, index) => {
+      if (index === 0) return;
+      const moduleTitle = resolveModuleTitle(item.path, item.fileName);
+      const normalizedItemUrl = normalizeUrl(item.url);
+      const currentSegment = item.path.split("/").pop()?.replace(/^\d+\./, "").split(".")?.[0] || "";
+      const parentSegment = classifyList[index - 1]?.path.split("/").pop()?.replace(/^\d+\./, "").split(".")?.[0] || "";
+      const byNavUrl = resolveNavTitleByCurrentUrl(normalizedItemUrl, moduleTitle);
+      item.fileName = resolveNavTitleBySegment(currentSegment, parentSegment, byNavUrl);
+    });
+  }
+
   const first = classifyList[0];
   if (first) {
     const topRefUrl =
@@ -189,7 +265,11 @@ const breadcrumbList = computed(() => {
     first.fileName = resolveFirstSegmentTitle(topRefUrl, first.fileName, first.fileName);
   }
 
-  return classifyList.map(({ fileName, url }) => ({ fileName, url }));
+  // 最后一项在存在目录页链接时也允许点击，便于回到当前文章所属目录页
+  return classifyList.map(({ fileName, url }) => ({
+    fileName,
+    url,
+  }));
 });
 </script>
 
