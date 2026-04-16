@@ -30,3 +30,4 @@ coverage
 
 /**/.vitepress/cache/*
 docs/.vitepress/dist
+.codebuddy
