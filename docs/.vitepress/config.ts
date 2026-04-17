@@ -103,6 +103,14 @@ export default defineConfig({
         text: "前端",
         items: [
           { 
+            text: "JavaScript",
+            items: [
+              { text: "语言核心与异步编程", link: "/frontend/javascript/language-async" }, // 语言语法、类型系统、作用域、闭包、原型链、异步编程、事件循环、内存与性能、正则表达式、最新语言特性。这些都是 JS 语言本身的本质，与运行环境无关
+              { text: "浏览器平台与 API", link: "/frontend/javascript/browser-api" }, // 所有浏览器提供的 API、DOM 操作、网络请求、存储、动画、图形、Web Components、浏览器安全与性能优化。这部分专注于“JS 在浏览器中的具体应用”
+              { text: "工程化与 Node.js 基础", link: "/frontend/javascript/engineering-node" }, // 模块化、打包工具、包管理、代码质量、测试、调试，以及 JS 专家需要的 Node.js 基础（不深入后端框架，仅包括事件循环差异、模块系统、文件系统、简单 HTTP 服务）
+            ]
+          },
+          { 
             text: "Vue",
             items: [
               { text: "响应式系统", link: "/frontend/vue/reactive" }, // 响应式原理 & MVVM
@@ -134,15 +142,7 @@ export default defineConfig({
               { text: "进阶用法", link: "/frontend/typescript/advance" }, // （泛型、装饰器、工具类型）
               { text: "框架的结合", link: "/frontend/typescript/framework" }, // 框架的结合（Vue/React）
             ]
-          },
-          { 
-            text: "JavaScript",
-            items: [
-              { text: "语法与核心机制", link: "/frontend/javascript/basic" }, // 语法与核心机制（ES6+）涵盖：数据类型、作用域、闭包、原型、this、类、模块、迭代器、生成器、Proxy、Reflect 等
-              { text: "异步编程与事件循环", link: "/frontend/javascript/async" }, // 异步编程与事件循环 涵盖：回调、Promise、async/await、事件循环、微任务宏任务、并发模型
-              { text: "Web API 与工程实践", link: "/frontend/javascript/web-api" }, // Web API 与工程实践 涵盖：DOM、BOM、Fetch、Storage、Worker、错误处理、调试、性能优化、正则、工具链
-            ]
-          },
+          }
         ]
       },
       { 
@@ -402,6 +402,7 @@ export default defineConfig({
         items: [
           { text: "归档页", link: "/archives" },
           { text: "清单页", link: "/articleOverview" },
+          { text: "功能实验室", link: "/lab" },
           // { text: "登录页", link: "/login" },
           // { text: "风险链接提示页", link: "/risk-link?target=https://vp.teek.top" },
           { text: "分类页", link: "/categories" },
