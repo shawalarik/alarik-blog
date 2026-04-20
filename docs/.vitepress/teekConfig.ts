@@ -169,6 +169,10 @@ const COVER_COUNT = assetConfig.coverCount;
 const COVER_IMAGES = Array.from({ length: COVER_COUNT }, (_, i) => `${CDN_BASE}/cover/cover${i + 1}.jpg`);
 const DEPRECATED_DIRS = assetConfig.deprecatedDirs;
 const DEPRECATED_GLOBS = DEPRECATED_DIRS.map(dir => `**/${dir}/**`);
+const isProdBuild = process.env.NODE_ENV === "production";
+const enableDocAnalysis =
+  process.env.VITEPRESS_ENABLE_DOC_ANALYSIS === "true" ||
+  (!isProdBuild && process.env.VITEPRESS_ENABLE_DOC_ANALYSIS !== "false");
 
 export const teekConfig = defineTeekConfig({
   sidebarTrigger: true,
@@ -226,9 +230,13 @@ export const teekConfig = defineTeekConfig({
   },
   vitePlugins: {
     fileContentLoaderIgnore: DEPRECATED_GLOBS,
-    docAnalysisOption: {
-      ignoreList: DEPRECATED_DIRS,
-    },
+    ...(enableDocAnalysis
+      ? {
+          docAnalysisOption: {
+            ignoreList: DEPRECATED_DIRS,
+          },
+        }
+      : {}),
     sidebarOption: {
       initItems: false,
       ignoreIndexMd: true,

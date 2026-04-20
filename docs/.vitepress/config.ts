@@ -16,6 +16,12 @@ const isProdBuild = process.env.NODE_ENV === "production";
 const enableLlmsTxt =
   process.env.VITEPRESS_ENABLE_LLMSTXT === "true" ||
   (!isProdBuild && process.env.VITEPRESS_ENABLE_LLMSTXT !== "false");
+const enableLastUpdated =
+  process.env.VITEPRESS_ENABLE_LAST_UPDATED === "true" ||
+  (!isProdBuild && process.env.VITEPRESS_ENABLE_LAST_UPDATED !== "false");
+const enableLocalSearch =
+  process.env.VITEPRESS_ENABLE_LOCAL_SEARCH === "true" ||
+  (!isProdBuild && process.env.VITEPRESS_ENABLE_LOCAL_SEARCH !== "false");
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -24,7 +30,7 @@ export default defineConfig({
   description: description,
   srcExclude: ["@fragment", "01.指南/**", "10.配置/**", "15.主题开发/**", "20.资源/**", "30.生态/**"],
   cleanUrls: false,
-  lastUpdated: true,
+  lastUpdated: enableLastUpdated,
   lang: "zh-CN",
   head: [
     ["link", { rel: "icon", type: "image/svg+xml", href: "/teek-logo-mini.svg" }],
@@ -417,9 +423,13 @@ export default defineConfig({
       },
     ],
     // socialLinks: [{ icon: "github", link: "https://github.com/Alarik" }],
-    search: {
-      provider: "local",
-    },
+    ...(enableLocalSearch
+      ? {
+          search: {
+            provider: "local",
+          } as any,
+        }
+      : {}),
   },
   vite: {
     plugins: [
