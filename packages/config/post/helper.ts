@@ -58,20 +58,26 @@ export const getSortPostsByDate = (posts: TkContentData[]): TkContentData[] => {
  * @param  posts 按时间排序之后的文章数据
  */
 export const getGroupPosts = (posts: TkContentData[]): PostData["groupPosts"] => {
-  const categoriesObj: Record<string, TkContentData[]> = {};
-  const tagsObj: Record<string, TkContentData[]> = {};
+  const categoriesObj = Object.create(null) as Record<string, TkContentData[]>;
+  const tagsObj = Object.create(null) as Record<string, TkContentData[]>;
+
+  const normalizeToArray = (value: unknown): string[] => {
+    if (Array.isArray(value)) return value.flat().filter(Boolean).map(String);
+    if (value == null || value === false) return [];
+    return [String(value)];
+  };
 
   posts.forEach(post => {
-    const { categories, tags } = post.frontmatter as { categories: string[]; tags: string[]; [key: string]: any };
+    const { categories, tags } = post.frontmatter as { categories?: unknown; tags?: unknown; [key: string]: any };
 
-    [categories || []].flat().forEach(category => {
+    normalizeToArray(categories).forEach(category => {
       if (category) {
         if (!categoriesObj[category]) categoriesObj[category] = [];
         categoriesObj[category].push(post);
       }
     });
 
-    [tags || []].flat().forEach(tag => {
+    normalizeToArray(tags).forEach(tag => {
       if (tag) {
         if (!tagsObj[tag]) tagsObj[tag] = [];
         tagsObj[tag].push(post);
