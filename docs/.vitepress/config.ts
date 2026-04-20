@@ -12,6 +12,10 @@ const description = [
   "这里记录技术实践、知识沉淀、项目复盘与个人思考",
   "以结构化目录与主题化索引管理内容，面向长期积累与高效检索",
 ].toString();
+const isProdBuild = process.env.NODE_ENV === "production";
+const enableLlmsTxt =
+  process.env.VITEPRESS_ENABLE_LLMSTXT === "true" ||
+  (!isProdBuild && process.env.VITEPRESS_ENABLE_LLMSTXT !== "false");
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -419,7 +423,7 @@ export default defineConfig({
   },
   vite: {
     plugins: [
-      llmstxt() as any,
+      ...(enableLlmsTxt ? [llmstxt() as any] : []),
       // Permalink 路由重写中间件：在服务端将 .html 的 permalink 请求映射到实际文件路径
       // 这是最终兜底方案，确保无论 Teek 插件的 dev 中间件是否生效，都能正确路由
       {

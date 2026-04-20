@@ -12,6 +12,8 @@ import { assetConfig } from "./assetConfig";
 /**
  * 从多层侧边栏数据中找到"包含叶子文章的分组节点"，提取为两级结构
  */
+const indexTitleCache = new Map<string, string | null>();
+
 function extractTwoLevel(items: any[], docsDir: string): any[] {
   let current = items;
 
@@ -82,7 +84,7 @@ function resolveGroupTitle(group: any, docsDir: string): string {
       // 构建到该目录的物理路径并读 index.md
       const dirParts = cleanPath.slice(0, i + 1);
       const dirPath = path.join(docsDir, ...dirParts);
-      const title = readIndexTitle(dirPath);
+      const title = readIndexTitleCached(dirPath);
       if (title && title !== rawText) return title;
     }
   }
@@ -93,7 +95,7 @@ function resolveGroupTitle(group: any, docsDir: string): string {
 function resolveModuleTitle(group: any, docsDir: string, moduleDir: string): string {
   const rawText = group.text || "";
   const dirPath = path.join(docsDir, ...moduleDir.replace(/^\/+/, "").split("/").filter(Boolean));
-  return readIndexTitle(dirPath) || rawText;
+  return readIndexTitleCached(dirPath) || rawText;
 }
 
 /** 递归查找第一个有 link 的叶子节点 */
@@ -129,6 +131,13 @@ function readIndexTitle(dirPath: string): string | null {
   } catch {
     return null;
   }
+}
+
+function readIndexTitleCached(dirPath: string): string | null {
+  if (indexTitleCache.has(dirPath)) return indexTitleCache.get(dirPath) ?? null;
+  const title = readIndexTitle(dirPath);
+  indexTitleCache.set(dirPath, title);
+  return title;
 }
 
 function getLeafParentDir(link: string): string {
