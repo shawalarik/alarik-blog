@@ -2,10 +2,124 @@
 @use "../../mixins/function" as *;
 
 @include b(home) {
+  @at-root .VPHome:has(.tk-home.is-categories-page),
+    .VPHome:has(.tk-home.is-tags-page) {
+    margin-bottom: 0 !important;
+    overflow-x: clip;
+  }
+
+  @include is(categories-landing) {
+    min-height: calc(100vh - var(--vp-nav-height));
+    overflow-x: clip;
+  }
+
+  @include is(tags-landing) {
+    min-height: calc(100vh - var(--vp-nav-height));
+    overflow-x: clip;
+  }
+
+  @include is(categories-page) {
+    overflow-x: clip;
+  }
+
+  @include is(tags-page) {
+    overflow-x: clip;
+  }
+
+  @include e(hero) {
+    position: relative;
+    width: 100vw;
+    min-height: 370px;
+    margin-left: calc(50% - 50vw);
+    overflow: hidden;
+    background: #b6b6b6 center center / cover no-repeat;
+
+    &.is-result-hero {
+      width: 100vw;
+      max-width: 100vw;
+      min-height: 370px;
+      margin-left: calc(50% - 50vw);
+      margin-right: 0;
+      margin-bottom: 40px;
+      border-radius: 0;
+    }
+  }
+
+  @include e(hero-mask) {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.18);
+  }
+
+  @include e(hero-content) {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    padding: 48px 24px;
+    text-align: center;
+    color: #fff;
+
+    h1 {
+      margin: 0;
+      font-size: clamp(34px, 4vw, 42px);
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+    }
+  }
+
+  @at-root .tk-home__hero.is-result-hero .tk-home__hero-content {
+    min-height: 370px;
+    padding: 32px 24px;
+  }
+
+  @include e(landing) {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    padding: 20px 0 28px;
+    background: var(--vp-c-bg-soft);
+  }
+
+  @include e(landing-inner) {
+    width: min(1080px, calc(100vw - 48px));
+    margin: 0 auto;
+  }
+
+  @include e(landing-footer) {
+    width: min(1080px, calc(100vw - 48px));
+    margin: 22px auto 0;
+  }
+
+  @include e(result-footer) {
+    max-width: getCssVar("home-max-width");
+    margin: 26px auto 0;
+  }
+
   @include e(content) {
     margin: 48px auto 0;
     max-width: getCssVar("home-max-width");
     gap: getCssVar("home-gap");
+
+    @include is(categories-result) {
+      margin-top: 0;
+      max-width: min(1080px, calc(100vw - 24px));
+
+      @include e(content__post) {
+        min-width: 0;
+      }
+    }
+
+    @include is(tags-result) {
+      margin-top: 0;
+      max-width: min(1080px, calc(100vw - 24px));
+
+      @include e(content__post) {
+        min-width: 0;
+      }
+    }
 
     @include e(content__post) {
       flex: 1;
@@ -34,6 +148,51 @@
   }
 
   @media (max-width: 768px) {
+    @include e(hero) {
+      min-height: 370px;
+
+      &.is-result-hero {
+        width: 100vw;
+        max-width: 100vw;
+        min-height: 370px;
+        margin-left: calc(50% - 50vw);
+        margin-bottom: 24px;
+      }
+    }
+
+    @include e(hero-content) {
+      min-height: 370px;
+      padding: 32px 16px;
+
+      h1 {
+        font-size: 30px;
+      }
+    }
+
+    @at-root .tk-home__hero.is-result-hero .tk-home__hero-content {
+      min-height: 370px;
+      padding: 24px 16px;
+    }
+
+    @include e(landing) {
+      padding-top: 16px;
+    }
+
+    @include e(landing-inner) {
+      width: calc(100vw - 24px);
+    }
+
+    @include e(landing-footer) {
+      width: calc(100vw - 24px);
+      margin-top: 18px;
+    }
+
+    @include e(result-footer) {
+      width: calc(100vw - 24px);
+      margin-top: 18px;
+      padding: 0;
+    }
+
     @include e(content) {
       flex-wrap: wrap;
       @include e(content__post) {

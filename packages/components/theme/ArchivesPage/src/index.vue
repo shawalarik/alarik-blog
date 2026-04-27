@@ -33,12 +33,12 @@ function parseSortValue(value: string) {
 }
 
 const timelineYears = computed(() =>
-  Object.entries(posts.groupPostsByYearMonth || {})
+  Object.entries(posts.value.groupPostsByYearMonth || {})
     .sort(([yearA], [yearB]) => parseSortValue(yearB) - parseSortValue(yearA))
     .map(([year, monthPosts]) => ({
       key: String(year),
       year,
-      yearCount: posts.groupPostsByYear[year]?.length ?? 0,
+      yearCount: posts.value.groupPostsByYear[year]?.length ?? 0,
       months: Object.entries(monthPosts || {})
         .sort(([monthA], [monthB]) => parseSortValue(monthB) - parseSortValue(monthA))
         .map(([month, monthItems]) => ({
@@ -69,6 +69,15 @@ watch(
 
 function toggleMonth(key: string) {
   expandedMonths.value[key] = !expandedMonths.value[key];
+}
+
+function formatMonthLabel(year: string | number, month: string | number) {
+  const normalizedYear = String(year).trim();
+  const normalizedMonth = Number(month);
+
+  if (normalizedYear === "NaN" || Number.isNaN(normalizedMonth)) return defaultLabel.value.notFound;
+
+  return `${normalizedYear}-${normalizedMonth}`;
 }
 
 // 屏幕加载元素时，开启过渡动画
@@ -119,7 +128,7 @@ onMounted(() => {
                 <div class="month-main">
                   <span class="month-dot"></span>
                   <span class="month">
-                    {{ String(monthGroup.month) === "NaN" ? defaultLabel.notFound : monthGroup.month + defaultLabel.month }}
+                    {{ formatMonthLabel(yearGroup.year, monthGroup.month) }}
                   </span>
                 </div>
                 <div class="month-meta">
@@ -132,8 +141,8 @@ onMounted(() => {
                 <ul v-if="expandedMonths[monthGroup.key]" class="month-posts">
                   <li ref="timelineItemListInstance" v-for="item in monthGroup.items" :key="item.url">
                     <a :href="item.url && withBase(item.url)" :aria-label="`${item.title}`">
-                      <span class="date">{{ item.date?.slice(5, 10) }}</span>
                       <TkArticleTitle :post="item" :title-tag-props="{ position: 'right', size: 'small' }" />
+                      <span class="date">{{ item.date?.slice(5, 10) }}</span>
                     </a>
                   </li>
                 </ul>

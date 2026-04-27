@@ -317,7 +317,7 @@ function handleGlobalKeydown(event: KeyboardEvent) {
         <span
           class="gallery-page__tab-indicator"
           :style="{
-            width: `calc((100% - ${(tabs.length - 1) * 10}px) / ${tabs.length})`,
+            width: `calc((100% - 20px - ${(tabs.length - 1) * 10}px) / ${tabs.length})`,
             transform: `translateX(calc(${activeTabIndex} * (100% + 10px)))`,
           }"
         ></span>

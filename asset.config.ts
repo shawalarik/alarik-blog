@@ -2,6 +2,7 @@ export type AssetConfig = {
   cdnBase: string; // 资源CDN基础URL
   assetRepoTreeApi: string; // 图床仓库树 API
   banner4kCount: number; // 轮播图数量
+  heroCount: number; // 顶部头图数量
   coverCount: number; // 文章封面数量
   bannerImgInterval: number; // 轮播图切换间隔时间（毫秒）
   bannerImgShuffle: boolean; // 是否随机切换轮播图
@@ -21,12 +22,14 @@ export type AssetGalleryCategoryConfig = {
 };
 
 const banner4kCount = 27;
-const coverCount = 80;
+const heroCount = 40;
+const coverCount = 100;
 
 export const assetConfig: AssetConfig = {
   cdnBase: "https://cdn.jsdelivr.net/gh/shawalarik/alarik-assets@master",
   assetRepoTreeApi: "https://api.github.com/repos/shawalarik/alarik-assets/git/trees/master?recursive=1",
   banner4kCount,
+  heroCount,
   coverCount,
   bannerImgInterval: 15000,
   bannerImgShuffle: true,
@@ -41,6 +44,16 @@ export const assetConfig: AssetConfig = {
       extension: "jpg",
       count: banner4kCount,
       description: "首页大图与轮播素材",
+    },
+    {
+      key: "hero",
+      label: "头图",
+      dir: "hero",
+      source: "sequence",
+      prefix: "hero",
+      extension: "jpg",
+      count: heroCount,
+      description: "分类页、文章页等顶部头图素材",
     },
     {
       key: "post",

@@ -115,9 +115,9 @@ function standardLink(link: string): string {
     <div class="catalogue-shell">
       <slot name="teek-catalogue-top-before" />
 
-      <div :class="ns.e('header')" role="group" aria-labelledby="catalogue-header-title">
+      <div v-if="hasCatalogues && !isGridStyle" :class="ns.e('header')" role="group" aria-labelledby="catalogue-header-title">
         <!-- 目录统计 -->
-        <div v-if="hasCatalogues && !isGridStyle" class="stats-bar">
+        <div class="stats-bar">
           <span class="stat-item">
             <span class="stat-icon">📚</span>
             <span class="stat-label">{{ catalogues.length }} 个专题</span>
@@ -131,11 +131,7 @@ function standardLink(link: string): string {
 
       <slot name="teek-catalogue-top-after" />
 
-      <div :class="ns.e('wrapper')" aria-labelledby="catalogue-list-title">
-        <div v-if="hasCatalogues && !isGridStyle" id="catalogue-list-title" class="title">
-          {{ frontmatter.pageTitle || t("tk.catalogue.title") }}
-        </div>
-
+      <div :class="ns.e('wrapper')" aria-labelledby="catalogue-header-title">
         <!-- 展开全部 / 折叠全部按钮 -->
         <div v-if="hasCollapsibleGroups && !isGridStyle" class="toolbar">
           <button class="toolbar-btn" type="button" @click="expandAll">展开全部</button>
@@ -157,14 +153,19 @@ function standardLink(link: string): string {
 </template>
 
 <style scoped>
+:deep(.tk-catalogue) {
+  overflow-x: clip;
+}
+
 .catalogue-hero {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 280px;
-  margin: -24px calc(50% - 50vw) 0;
+  min-height: 300px;
+  margin: -20px -30px 0;
   overflow: hidden;
+  border-radius: 10px 10px 0 0;
   background-position: center;
   background-size: cover;
 }
@@ -178,10 +179,11 @@ function standardLink(link: string): string {
 }
 
 .catalogue-hero__content {
+  box-sizing: border-box;
   position: relative;
   z-index: 1;
-  width: min(1200px, calc(100vw - 48px));
-  padding: 40px 24px 86px;
+  width: min(1200px, 100%);
+  padding: 48px 24px;
   text-align: center;
   color: #fff;
 }
@@ -195,14 +197,15 @@ function standardLink(link: string): string {
 }
 
 .catalogue-shell {
-  width: min(1080px, calc(100vw - 48px));
-  margin: -52px auto 0;
+  box-sizing: border-box;
+  width: min(1080px, 100%);
+  margin: 28px auto 0;
   padding: 28px 30px 24px;
   border: 1px solid color-mix(in srgb, var(--vp-c-divider) 84%, transparent);
   border-radius: 26px;
-  background: color-mix(in srgb, var(--vp-c-bg) 92%, white 8%);
+  background: var(--vp-c-bg);
   box-shadow: 0 20px 46px rgba(15, 23, 42, 0.08);
-  backdrop-filter: blur(12px);
+  overflow-x: clip;
 }
 
 .catalogue-shell :deep(.tk-catalogue__header) {
@@ -274,7 +277,8 @@ function standardLink(link: string): string {
 }
 
 .catalogue-page--grid {
-  width: min(1200px, calc(100vw - 72px)) !important;
+  box-sizing: border-box;
+  width: min(1200px, 100%) !important;
 }
 
 .catalogue-list--grid {
@@ -321,7 +325,7 @@ function standardLink(link: string): string {
 
 @media (max-width: 900px) {
   .catalogue-page--grid {
-    width: calc(100vw - 24px) !important;
+    width: 100% !important;
   }
 
   .catalogue-list--grid {
@@ -339,36 +343,37 @@ function standardLink(link: string): string {
 }
 
 :deep(.catalogue-item) {
-  border: 1px solid color-mix(in srgb, var(--vp-c-divider) 80%, transparent);
-  border-radius: 14px;
+  border: none;
+  border-radius: 0;
   background: color-mix(in srgb, var(--vp-c-bg-soft) 86%, white 14%);
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  transition: transform 0.18s ease;
 }
 
 :deep(.catalogue-item:hover) {
-  border-color: color-mix(in srgb, var(--vp-c-brand-1) 24%, transparent);
-  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.06);
   transform: translateY(-1px);
 }
 
 :deep(.catalogue-item a) {
-  padding: 10px 14px;
-  border-radius: inherit;
+  padding: 8px 0;
+  border-radius: 0;
 }
 
 @media (max-width: 900px) {
   .catalogue-hero {
     min-height: 220px;
+    margin: -20px -30px 0;
   }
 
   .catalogue-hero__content {
-    width: calc(100vw - 24px);
-    padding: 32px 16px 72px;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 32px 16px;
   }
 
   .catalogue-shell {
-    width: calc(100vw - 24px);
-    margin-top: -40px;
+    box-sizing: border-box;
+    width: 100%;
+    margin-top: 18px;
     padding: 20px 16px;
     border-radius: 22px;
   }

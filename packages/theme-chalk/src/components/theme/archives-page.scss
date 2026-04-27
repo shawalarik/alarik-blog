@@ -3,65 +3,289 @@
 
 @include b(archives) {
   .count {
-    font-size: 13.6px;
-    opacity: 0.8;
-    font-weight: 300;
-    font-style: oblique;
+    font-size: 13px;
+    opacity: 0.5;
+    font-weight: 400;
+    font-style: normal;
   }
 
   @include e(header) {
+    margin-bottom: 20px;
+
+    h1 {
+      margin: 0;
+    }
+
     .count {
       font-style: normal;
+      color: getCssVar("text-color-2");
     }
   }
 
   @include e(timeline) {
-    margin: 32px 0;
+    position: relative;
+    margin: 28px 0 36px;
+    padding-left: 28px;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      bottom: 12px;
+      left: 17px;
+      width: 1px;
+      background: rgba(148, 163, 184, 0.16);
+    }
 
     @include m(year) {
-      border-bottom: 1px solid getCssVar("line-color");
-      margin-top: 32px;
-      position: sticky;
-      top: var(--vp-nav-height);
-      background-color: getCssVar("bg-color");
-      z-index: 1;
-
-      .year {
-        padding: 8px 0;
-        font-size: 24px;
-        font-weight: 500;
-      }
+      display: none;
     }
 
     @include e(timeline__m) {
-      margin-top: 16px;
+      margin-top: 0;
 
       @include m(month) {
-        border-bottom: 1px solid getCssVar("line-color");
-        margin-top: 16px;
+        display: flex;
+        align-items: flex-start;
+        width: 100%;
+        margin-top: 22px;
+        padding: 0;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        text-align: left;
+        color: inherit;
+
+        .month-main,
+        .month-meta {
+          display: flex;
+          align-items: center;
+        }
+
+        .month-main {
+          gap: 14px;
+        }
+
+        .month-meta {
+          gap: 10px;
+          margin-left: auto;
+          padding-top: 8px;
+        }
+
+        .month-dot {
+          position: relative;
+          width: 34px;
+          height: 34px;
+          border-radius: 999px;
+          background: #ff9800;
+          box-shadow: 0 8px 18px rgba(255, 152, 0, 0.18);
+          flex-shrink: 0;
+
+          &::before,
+          &::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+          }
+
+          &::before {
+            top: 10px;
+            width: 14px;
+            height: 11px;
+            border: 1.6px solid #fff;
+            border-radius: 3px;
+            background: transparent;
+          }
+
+          &::after {
+            top: 13px;
+            width: 10px;
+            height: 1.6px;
+            box-shadow:
+              0 3.5px 0 #fff,
+              -3px 0 0 #fff,
+              3px 0 0 #fff,
+              -3px 3.5px 0 #fff,
+              3px 3.5px 0 #fff;
+          }
+        }
+
         .month {
-          padding-bottom: 8px;
-          font-size: 19px;
+          padding-top: 3px;
+          font-size: 20px;
+          font-weight: 500;
+          font-style: italic;
+          font-family: "Georgia", "Times New Roman", serif;
+          color: #ff9800;
+          letter-spacing: 0.4px;
+        }
+
+        .arrow {
+          width: 8px;
+          height: 8px;
+          border-right: 1.5px solid rgba(107, 114, 128, 0.7);
+          border-bottom: 1.5px solid rgba(107, 114, 128, 0.7);
+          transform: rotate(45deg);
+          transition: transform getCssVar("transition-duration");
+          opacity: 0.9;
+        }
+
+        &.is-open {
+          .arrow {
+            transform: rotate(225deg);
+          }
         }
       }
 
-      ul {
-        padding: 8px 16px;
+      .archives-month {
+        position: relative;
+        padding-left: 0;
+
+        &:first-child {
+          .tk-archives__timeline__m__month {
+            margin-top: 0;
+          }
+        }
+      }
+
+      .month-posts {
+        margin: 10px 0 0 46px;
+        padding: 0 0 0 18px;
+
         li {
-          line-height: 2;
+          display: flex;
+          list-style: none;
+
+          & + li {
+            margin-top: 10px;
+          }
+
           a {
-            display: block;
-            transition: padding getCssVar("transition-duration");
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            max-width: none;
+            min-height: 54px;
+            padding: 14px 18px;
+            border: 1px solid rgba(148, 163, 184, 0.08);
+            border-radius: 3px;
+            background: #f4f4f5;
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.45) inset;
+            transition:
+              color getCssVar("transition-duration"),
+              background getCssVar("transition-duration");
+
+            &::before {
+              content: "";
+              position: absolute;
+              top: 18px;
+              left: -7px;
+              width: 14px;
+              height: 14px;
+              border-left: 1px solid rgba(148, 163, 184, 0.08);
+              border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+              background: #f4f4f5;
+              transform: rotate(45deg);
+            }
+
             &:hover {
-              padding-left: 16px;
               color: getCssVar("theme-color");
-              background: getCssVar("fill-color-light");
+              background: #efeff1;
+            }
+
+            > .tk-article-title {
+              flex: 1;
+              min-width: 0;
             }
 
             .date {
-              opacity: 0.6;
-              font-size: 13.6px;
-              margin-right: 8px;
+              margin-left: auto;
+              min-width: 56px;
+              color: rgba(107, 114, 128, 0.85);
+              opacity: 1;
+              font-size: 13px;
+              text-align: right;
+              white-space: nowrap;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.archives-month-collapse-enter-active,
+.archives-month-collapse-leave-active {
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+  transform-origin: top;
+}
+
+.archives-month-collapse-enter-from,
+.archives-month-collapse-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+@media (max-width: 768px) {
+  @include b(archives) {
+    @include e(timeline) {
+      padding-left: 18px;
+
+      &::before {
+        left: 9px;
+      }
+
+      @include e(timeline__m) {
+        @include m(month) {
+          margin-top: 18px;
+
+          .month-main {
+            gap: 12px;
+          }
+
+          .month-meta {
+            gap: 8px;
+            padding-top: 6px;
+          }
+
+          .month-dot {
+            width: 30px;
+            height: 30px;
+
+            &::before {
+              top: 9px;
+              width: 12px;
+              height: 10px;
+            }
+
+            &::after {
+              top: 12px;
+              width: 8px;
+            }
+          }
+
+          .month {
+            font-size: 18px;
+          }
+        }
+
+        .month-posts {
+          margin-left: 42px;
+          padding-left: 12px;
+
+          li a {
+            gap: 10px;
+            width: 100%;
+            padding: 12px 14px;
+
+            &::before {
+              left: -6px;
             }
           }
         }

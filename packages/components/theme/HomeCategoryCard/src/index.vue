@@ -1,13 +1,18 @@
 <script setup lang="ts" name="HomeCategoryCard">
 import type { Category } from "@teek/config";
-import { computed, ref, inject, onMounted, watch } from "vue";
+import { computed, ref, inject, onMounted, onUnmounted, watch } from "vue";
 import { useRouter, withBase } from "vitepress";
-import { useNamespace, useLocale } from "@teek/composables";
+import { useNamespace, useLocale, useVpRouter } from "@teek/composables";
 import { categoryIcon } from "@teek/static";
 import { isFunction } from "@teek/helper";
 import { pageNumKey } from "@teek/components/theme/HomePostList/src/homePostList";
-import { useTeekConfig, usePagePath, usePosts } from "@teek/components/theme/ConfigProvider";
-import { postDataUpdateSymbol } from "@teek/components/theme/Home/src/home";
+import { useTeekConfig, usePagePath, usePosts, useTagColor } from "@teek/components/theme/ConfigProvider";
+import {
+  categoryPageQuerySyncSymbol,
+  ensureRouteQueryObserver,
+  postDataUpdateSymbol,
+  routeQueryChangeEvent,
+} from "@teek/components/theme/Home/src/home";
 import { TkPageCard } from "@teek/components/common/PageCard";
 
 defineOptions({ name: "HomeCategoryCard" });
@@ -18,6 +23,8 @@ const ns = useNamespace("category");
 const { t } = useLocale();
 const { getTeekConfigRef } = useTeekConfig();
 const { categoryPath } = usePagePath();
+const tagColor = useTagColor();
+const { route, bindAfterRouteChange } = useVpRouter();
 
 // 分类配置项
 const categoryConfig = getTeekConfigRef<Required<Category>>("category", {
@@ -52,9 +59,82 @@ const finalTitle = computed(() => {
 });
 
 const updatePostListData = inject(postDataUpdateSymbol, () => {});
+const syncCategoryPageQuery = inject(categoryPageQuerySyncSymbol, () => {});
 const router = useRouter();
 const selectedCategory = ref("");
 const categoryKey = "category";
+const radarSize = 320;
+const radarLevels = 5;
+const radarCenter = radarSize / 2;
+const radarRadius = 108;
+const isLandingPage = computed(() => categoriesPage && !selectedCategory.value);
+const radarCategories = computed(() =>
+  [...categories.value].sort((a, b) => b.length - a.length || a.name.localeCompare(b.name)).slice(0, 14)
+);
+const radarMax = computed(() => Math.max(...radarCategories.value.map(item => item.length), 1));
+
+const syncSelectedCategory = () => {
+  if (typeof window === "undefined") return;
+  const { searchParams } = new URL(window.location.href);
+  selectedCategory.value = searchParams.get(categoryKey) || "";
+};
+
+const getCategoryStyle = (index: number) => {
+  const color = tagColor.value[index % tagColor.value.length];
+  return {
+    [ns.cssVarName("category-bg-color")]: color.bg,
+    backgroundColor: color.bg,
+    color: color.text,
+    borderColor: color.border,
+    boxShadow: `0 10px 18px -16px ${color.text}`,
+  };
+};
+
+const getRadarPoint = (index: number, radius: number) => {
+  const total = Math.max(radarCategories.value.length, 1);
+  const angle = (Math.PI * 2 * index) / total - Math.PI / 2;
+  return {
+    x: radarCenter + Math.cos(angle) * radius,
+    y: radarCenter + Math.sin(angle) * radius,
+  };
+};
+
+const radarGridPolygons = computed(() =>
+  Array.from({ length: radarLevels }, (_, level) =>
+    radarCategories.value.map((_, index) => {
+      const point = getRadarPoint(index, (radarRadius * (level + 1)) / radarLevels);
+      return `${point.x},${point.y}`;
+    })
+  )
+);
+
+const radarAxisLines = computed(() =>
+  radarCategories.value.map((_, index) => {
+    const point = getRadarPoint(index, radarRadius);
+    return { x1: radarCenter, y1: radarCenter, x2: point.x, y2: point.y };
+  })
+);
+
+const radarPolygonPoints = computed(() =>
+  radarCategories.value
+    .map((item, index) => {
+      const ratio = item.length / radarMax.value;
+      const point = getRadarPoint(index, Math.max(ratio * radarRadius, 12));
+      return `${point.x},${point.y}`;
+    })
+    .join(" ")
+);
+
+const radarLabels = computed(() =>
+  radarCategories.value.map((item, index) => {
+    const point = getRadarPoint(index, radarRadius + 24);
+    let anchor: "start" | "middle" | "end" = "middle";
+    if (point.x < radarCenter - 8) anchor = "end";
+    else if (point.x > radarCenter + 8) anchor = "start";
+
+    return { ...item, x: point.x, y: point.y, anchor };
+  })
+);
 
 /**
  * 点击分类，更新文章列表数据
@@ -81,15 +161,15 @@ const handleSwitchCategory = (category = "") => {
 
   // 如果在分类页，则替换 URL，但不刷新
   window.history.pushState({}, "", pathname + searchParamsStr);
+  syncCategoryPageQuery();
   // 更新文章列表数据
   updatePostListData();
 };
 
 onMounted(() => {
-  const { searchParams } = new URL(window.location.href);
-  const category = searchParams.get(categoryKey);
-  // 更新激活的分类
-  if (category) selectedCategory.value = category;
+  ensureRouteQueryObserver();
+  syncSelectedCategory();
+  window.addEventListener(routeQueryChangeEvent, syncSelectedCategory);
 });
 
 watch(
@@ -100,17 +180,108 @@ watch(
       selectedCategory.value = "";
       return;
     }
-    const { searchParams } = new URL(window.location.href);
-    const category = searchParams.get(categoryKey);
-    if (category && selectedCategory.value !== category) selectedCategory.value = category;
+    syncSelectedCategory();
   }
 );
+
+watch(() => route.path, syncSelectedCategory, { immediate: true });
+bindAfterRouteChange("home-category-route-query-sync", syncSelectedCategory);
+
+onUnmounted(() => {
+  window.removeEventListener(routeQueryChangeEvent, syncSelectedCategory);
+});
 
 const itemRefs = ref<HTMLLIElement[]>([]);
 </script>
 
 <template>
+  <div v-if="isLandingPage" :class="[ns.b(), ns.is('landing', true)]" :aria-label="t('tk.categoryCard.label')">
+    <section :class="ns.e('landing-panel')">
+      <div :class="ns.e('landing-tags')" :aria-label="t('tk.categoryCard.listLabel')">
+        <a
+          v-for="(item, index) in categories"
+          :key="item.name"
+          :style="getCategoryStyle(index)"
+          :class="ns.e('landing-tag')"
+          :aria-label="item.name"
+          @click="handleSwitchCategory(item.name)"
+        >
+          <span>{{ item.name }}</span>
+          <span>{{ item.length }}</span>
+        </a>
+      </div>
+
+      <div v-if="!categories.length" :class="ns.m('empty')" :aria-label="categoryConfig.emptyLabel">
+        {{ categoryConfig.emptyLabel }}
+      </div>
+    </section>
+
+    <section v-if="radarCategories.length" :class="ns.e('landing-panel')">
+      <h3 :class="ns.e('radar-title')">文章分类雷达图</h3>
+      <div :class="ns.e('radar-wrap')">
+        <svg
+          :class="ns.e('radar-svg')"
+          :viewBox="`0 0 ${radarSize} ${radarSize}`"
+          role="img"
+          aria-label="文章分类雷达图"
+        >
+          <g>
+            <polygon
+              v-for="(polygon, index) in radarGridPolygons"
+              :key="`grid-${index}`"
+              :points="polygon.join(' ')"
+              fill="none"
+              stroke="var(--vp-c-divider)"
+              stroke-width="1"
+            />
+          </g>
+
+          <g>
+            <line
+              v-for="(line, index) in radarAxisLines"
+              :key="`line-${index}`"
+              :x1="line.x1"
+              :y1="line.y1"
+              :x2="line.x2"
+              :y2="line.y2"
+              stroke="var(--vp-c-divider)"
+              stroke-width="1"
+            />
+          </g>
+
+          <polygon
+            :points="radarPolygonPoints"
+            fill="rgba(93, 233, 182, 0.22)"
+            stroke="rgba(93, 233, 182, 0.92)"
+            stroke-width="2"
+          />
+
+          <circle
+            v-for="(item, index) in radarCategories"
+            :key="`point-${item.name}`"
+            :cx="getRadarPoint(index, Math.max((item.length / radarMax) * radarRadius, 12)).x"
+            :cy="getRadarPoint(index, Math.max((item.length / radarMax) * radarRadius, 12)).y"
+            r="3"
+            fill="rgba(93, 233, 182, 0.92)"
+          />
+
+          <text
+            v-for="item in radarLabels"
+            :key="`label-${item.name}`"
+            :x="item.x"
+            :y="item.y"
+            :text-anchor="item.anchor"
+            dominant-baseline="middle"
+          >
+            {{ item.name }}
+          </text>
+        </svg>
+      </div>
+    </section>
+  </div>
+
   <TkPageCard
+    v-else
     :page="!categoriesPage"
     v-model="pageNum"
     :pageSize="categoryConfig.limit"

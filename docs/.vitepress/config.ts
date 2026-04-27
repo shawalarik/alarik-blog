@@ -97,6 +97,7 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     assetMeta: {
       cdnBase: assetConfig.cdnBase,
+      heroCount: assetConfig.heroCount,
       coverCount: assetConfig.coverCount,
     },
     logo: "/teek-logo-mini.svg",

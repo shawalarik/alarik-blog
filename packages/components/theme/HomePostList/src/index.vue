@@ -1,7 +1,7 @@
 <script setup lang="ts" name="HomePostList">
 import type { TkPaginationProps } from "@teek/components/common/Pagination";
 import type { Post, TkContentData } from "@teek/config";
-import { reactive, ref, watch, nextTick, computed, onMounted, watchEffect } from "vue";
+import { reactive, ref, watch, nextTick, computed, onMounted, onUnmounted, watchEffect } from "vue";
 import { useData } from "vitepress";
 import { isClient, removeUnit } from "@teek/helper";
 import { useNamespace, useLocale, useWindowSize, useWindowTransition, useVpRouter } from "@teek/composables";
@@ -10,6 +10,7 @@ import { useTeekConfig, usePosts, useWindowTransitionConfig } from "@teek/compon
 import { TkPagination } from "@teek/components/common/Pagination";
 import { TkIcon } from "@teek/components/common/Icon";
 import { pageNumKey } from "./homePostList";
+import { ensureRouteQueryObserver, routeQueryChangeEvent } from "@teek/components/theme/Home/src/home";
 import HomePostItem from "./HomePostItem.vue";
 import HomePostItemCard from "./HomePostItemCard.vue";
 
@@ -136,7 +137,13 @@ const postItemListInstance = ref<HTMLLIElement[] | null>(null);
 const { start } = useWindowTransition(postItemListInstance as any, false);
 
 onMounted(() => {
+  ensureRouteQueryObserver();
   windowTransition.value && start();
+  window.addEventListener(routeQueryChangeEvent, updateData);
+});
+
+onUnmounted(() => {
+  window.removeEventListener(routeQueryChangeEvent, updateData);
 });
 
 defineExpose({ updateData });
