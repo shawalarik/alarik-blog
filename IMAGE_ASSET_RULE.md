@@ -6,11 +6,13 @@
 - 后续只改这个文件里的变量，不需要去多个配置文件改数字
 - 当前可调变量：
   - `cdnBase`
+  - `assetRepoTreeApi`
   - `banner4kCount`
   - `coverCount`
   - `bannerImgInterval`
   - `bannerImgShuffle`
   - `deprecatedDirs`
+  - `galleryCategories`
 
 ## 当前图床
 
@@ -37,12 +39,12 @@
   - 文件名：`banner1.jpg`、`banner2.jpg`、...、`bannerN.jpg`
   - 项目配置文件：`docs/.vitepress/theme/config/teekConfig.ts`
   - 数量变量：`asset.config.ts` 的 `banner4kCount`
-- 当前 `banner4kCount = 16`，会读取 `banner1.jpg` 到 `banner16.jpg`。
+- 当前 `banner4kCount = 27`，会读取 `banner1.jpg` 到 `banner27.jpg`。
 
 ## 下次新增图片的最短流程
 
 1. 往图床仓库 `banner/4k/` 上传新图，命名为下一个序号（例如 `banner17.jpg`）。
-2. 在当前项目根目录 `asset.config.ts` 把 `banner4kCount` 从 `16` 改为 `17`。
+2. 在当前项目根目录 `asset.config.ts` 把 `banner4kCount` 从 `27` 改为 `28`。
 3. 运行 `pnpm docs:build` 验证。
 4. 提交并部署。
 
@@ -52,7 +54,22 @@
   - 文件名：`cover1.jpg`、`cover2.jpg`、...、`coverN.jpg`
   - 项目配置文件：`docs/.vitepress/teekConfig.ts`
   - 数量变量：`asset.config.ts` 的 `coverCount`
-- 当前 `coverCount = 60`，会读取 `cover1.jpg` 到 `cover60.jpg`。
+- 当前 `coverCount = 80`，会读取 `cover1.jpg` 到 `cover80.jpg`。
+
+## 相册页分类规则
+
+- 相册页地址：`/pages/gallery`
+- 页面数据统一读取 `asset.config.ts` 的 `galleryCategories`
+- 当前支持两种来源：
+  - `sequence`：固定编号，例如 `banner1.jpg ~ bannerN.jpg`
+  - `tree`：读取图床仓库目录树，自动收集该目录下所有图片
+- 当前默认分类：
+  - `banner`：对应 `banner/4k/`
+  - `post`：对应 `post/`
+  - `cover`：对应 `cover/`
+  - `gallery`：对应 `gallery/`
+- 如果未来新增分类，优先只改 `asset.config.ts` 的 `galleryCategories`
+- `post/` 和 `gallery/` 更适合使用 `tree` 模式，因为它们可能继续按子目录组织
 
 ## 列表封面排除目录
 

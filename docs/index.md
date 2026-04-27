@@ -32,14 +32,14 @@ features:
     title: 高效检索与回顾
     details: 通过目录、索引与标签体系，快速找到需要的知识并持续迭代。
 ---
-
+<!-- 
 ## 平台定位
 
 这是 Alarik 的私人 Blog 与知识平台，核心目标是把零散信息转化为结构化知识资产。
 
 内容会围绕工程实践、学习笔记、专题梳理与项目复盘展开，并保持长期更新。
 
-在右上角 <TkIcon :icon="readingIcon" :size="20" /> 图标的 <mark>配置切换</mark> 区域，你仍可以切换不同展示风格，选择最适合阅读与沉淀的视图。
+在右上角 <TkIcon :icon="readingIcon" :size="20" /> 图标的 <mark>配置切换</mark> 区域，你仍可以切换不同展示风格，选择最适合阅读与沉淀的视图。 -->
 
 <script setup lang="ts">
 import { onMounted } from "vue";

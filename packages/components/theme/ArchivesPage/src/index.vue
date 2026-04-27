@@ -1,6 +1,6 @@
 <script setup lang="ts" name="ArchivesPage">
 import { withBase, useData } from "vitepress";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useNamespace, useLocale, useWindowTransition } from "@teek/composables";
 import { useWindowTransitionConfig, usePosts } from "@teek/components/theme/ConfigProvider";
 import { TkArticlePage } from "@teek/components/common/ArticlePage";
@@ -26,6 +26,50 @@ const defaultLabel = computed(() => {
     notFound: frontmatterConst.notFound ?? t("tk.archives.notFound"),
   };
 });
+
+function parseSortValue(value: string) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : -1;
+}
+
+const timelineYears = computed(() =>
+  Object.entries(posts.groupPostsByYearMonth || {})
+    .sort(([yearA], [yearB]) => parseSortValue(yearB) - parseSortValue(yearA))
+    .map(([year, monthPosts]) => ({
+      key: String(year),
+      year,
+      yearCount: posts.groupPostsByYear[year]?.length ?? 0,
+      months: Object.entries(monthPosts || {})
+        .sort(([monthA], [monthB]) => parseSortValue(monthB) - parseSortValue(monthA))
+        .map(([month, monthItems]) => ({
+          key: `${year}-${month}`,
+          month,
+          items: monthItems,
+        })),
+    }))
+);
+
+const expandedMonths = ref<Record<string, boolean>>({});
+
+watch(
+  timelineYears,
+  years => {
+    const nextExpandedMonths: Record<string, boolean> = {};
+
+    years.forEach((yearGroup, yearIndex) => {
+      yearGroup.months.forEach((monthGroup, monthIndex) => {
+        nextExpandedMonths[monthGroup.key] = expandedMonths.value[monthGroup.key] ?? (yearIndex === 0 && monthIndex === 0);
+      });
+    });
+
+    expandedMonths.value = nextExpandedMonths;
+  },
+  { immediate: true }
+);
+
+function toggleMonth(key: string) {
+  expandedMonths.value[key] = !expandedMonths.value[key];
+}
 
 // 屏幕加载元素时，开启过渡动画
 const windowTransition = useWindowTransitionConfig(config => config.archives);
@@ -55,31 +99,46 @@ onMounted(() => {
     </div>
 
     <div :class="ns.e('timeline')">
-      <template v-for="(monthPosts, year) in posts.groupPostsByYearMonth" :key="year">
+      <template v-for="yearGroup in timelineYears" :key="yearGroup.key">
         <div :class="`${ns.em('timeline', 'year')} flx-justify-between`">
           <div class="year">
-            {{ String(year).trim() === "NaN" ? defaultLabel.notFound : String(year).trim() + defaultLabel.year }}
+            {{ String(yearGroup.year).trim() === "NaN" ? defaultLabel.notFound : String(yearGroup.year).trim() + defaultLabel.year }}
           </div>
-          <div class="count">{{ posts.groupPostsByYear[year].length + defaultLabel.count }}</div>
+          <div class="count">{{ yearGroup.yearCount + defaultLabel.count }}</div>
         </div>
 
         <div :class="ns.e('timeline__m')">
-          <template v-for="(p, month) in monthPosts" :key="month">
-            <div :class="`${ns.em('timeline__m', 'month')} flx-justify-between`">
-              <div class="month">
-                {{ String(month) === "NaN" ? defaultLabel.notFound : month + defaultLabel.month }}
-              </div>
-              <div class="count">{{ p.length + defaultLabel.count }}</div>
-            </div>
+          <template v-for="monthGroup in yearGroup.months" :key="monthGroup.key">
+            <section class="archives-month">
+              <button
+                type="button"
+                :class="[ns.em('timeline__m', 'month'), 'flx-justify-between', { 'is-open': expandedMonths[monthGroup.key] }]"
+                :aria-expanded="expandedMonths[monthGroup.key] ? 'true' : 'false'"
+                @click="toggleMonth(monthGroup.key)"
+              >
+                <div class="month-main">
+                  <span class="month-dot"></span>
+                  <span class="month">
+                    {{ String(monthGroup.month) === "NaN" ? defaultLabel.notFound : monthGroup.month + defaultLabel.month }}
+                  </span>
+                </div>
+                <div class="month-meta">
+                  <span class="count">{{ monthGroup.items.length + defaultLabel.count }}</span>
+                  <span class="arrow"></span>
+                </div>
+              </button>
 
-            <ul>
-              <li ref="timelineItemListInstance" v-for="item in p" :key="item.url">
-                <a :href="item.url && withBase(item.url)" :aria-label="`${item.title}`">
-                  <span class="date">{{ item.date?.slice(5, 10) }}</span>
-                  <TkArticleTitle :post="item" :title-tag-props="{ position: 'right', size: 'small' }" />
-                </a>
-              </li>
-            </ul>
+              <Transition name="archives-month-collapse">
+                <ul v-if="expandedMonths[monthGroup.key]" class="month-posts">
+                  <li ref="timelineItemListInstance" v-for="item in monthGroup.items" :key="item.url">
+                    <a :href="item.url && withBase(item.url)" :aria-label="`${item.title}`">
+                      <span class="date">{{ item.date?.slice(5, 10) }}</span>
+                      <TkArticleTitle :post="item" :title-tag-props="{ position: 'right', size: 'small' }" />
+                    </a>
+                  </li>
+                </ul>
+              </Transition>
+            </section>
           </template>
         </div>
       </template>

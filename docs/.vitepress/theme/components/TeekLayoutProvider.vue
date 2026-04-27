@@ -1,8 +1,8 @@
 <script setup lang="ts" name="TeekLayoutProvider">
 import type { TeekConfig } from "vitepress-theme-teek";
-import Teek, { teekConfigContext, clockIcon } from "vitepress-theme-teek";
+import Teek, { teekConfigContext, clockIcon, TkFooterInfo } from "vitepress-theme-teek";
 import { useData } from "vitepress";
-import { watch, nextTick, ref, provide } from "vue";
+import { watch, nextTick, ref, provide, computed } from "vue";
 import { teekDocConfig } from "../config/teekConfig";
 import { useRibbon } from "../composables/useRibbon";
 import { useRuntime } from "../composables/useRuntime";
@@ -10,9 +10,12 @@ import ConfigSwitch from "./ConfigSwitch.vue";
 import ContributeChart from "./ContributeChart.vue";
 import NotFound from "./404.vue";
 import CalendarCard from "./CalendarCard.vue";
+import PageRefreshTip from "./PageRefreshTip.vue";
 
 const ns = "layout-provider";
 const { frontmatter } = useData();
+const footerPagePermalinks = ["/gallery", "/lab"];
+const showStandaloneFooter = computed(() => footerPagePermalinks.includes(frontmatter.value.permalink));
 
 // 默认文档风
 const currentStyle = ref("doc");
@@ -55,6 +58,8 @@ const handleConfigSwitch = (config: TeekConfig, style: string) => {
 
 <template>
   <Teek.Layout>
+    <PageRefreshTip />
+
     <template #teek-theme-enhance-bottom>
       <div :class="[ns, 'flx-align-center']">
         <ConfigSwitch v-model="currentStyle" @switch="handleConfigSwitch" />
@@ -69,6 +74,12 @@ const handleConfigSwitch = (config: TeekConfig, style: string) => {
       <ConfigSwitch v-model="currentStyle" @switch="handleConfigSwitch" />
     </template>
 
+    <template #layout-bottom>
+      <div v-if="showStandaloneFooter" class="standalone-footer-wrap">
+        <TkFooterInfo />
+      </div>
+    </template>
+
     <template #teek-archives-top-before>
       <ContributeChart />
     </template>
@@ -81,8 +92,13 @@ const handleConfigSwitch = (config: TeekConfig, style: string) => {
 
 <style lang="scss">
 .tk-my.is-circle-bg {
+.standalone-footer-wrap {
+  margin-top: 32px;
+}
+
   .tk-my__avatar.circle-rotate {
     margin-top: 200px;
+
 
     .tk-avatar:not(.avatar-sticker) {
       border: 5px solid var(--vp-c-bg-elv);

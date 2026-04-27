@@ -1,6 +1,7 @@
 import { defineConfig } from "vitepress";
 import llmstxt from "vitepress-plugin-llms";
 import { teekConfig } from "./teekConfig";
+import { assetConfig } from "./assetConfig";
 // 本地 Teek 主题包引用（与 Teek 在线主题包引用 二选一）
 import { version } from "../../packages/teek/version";
 
@@ -94,6 +95,10 @@ export default defineConfig({
   },
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
+    assetMeta: {
+      cdnBase: assetConfig.cdnBase,
+      coverCount: assetConfig.coverCount,
+    },
     logo: "/teek-logo-mini.svg",
     darkModeSwitchLabel: "主题",
     sidebarMenuLabel: "菜单",
@@ -412,6 +417,7 @@ export default defineConfig({
         items: [
           { text: "归档页", link: "/archives" },
           { text: "清单页", link: "/articleOverview" },
+          { text: "图库", link: "/gallery" },
           { text: "功能实验室", link: "/lab" },
           // { text: "登录页", link: "/login" },
           // { text: "风险链接提示页", link: "/risk-link?target=https://vp.teek.top" },
