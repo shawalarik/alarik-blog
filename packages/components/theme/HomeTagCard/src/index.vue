@@ -68,31 +68,48 @@ const getTagStyle = (index: number) => {
 const updatePostListData = inject(postDataUpdateSymbol, () => {});
 const router = useRouter();
 const selectedTag = ref("");
+const expandLandingTags = ref(false);
 const tagKey = "tag";
+const cloudLimit = 24;
+const landingTagInitialLimit = 42;
 const showLandingPage = computed(() => tagsPage && !selectedTag.value);
 const landingTags = computed(() =>
   [...tags.value].sort((a, b) => b.length - a.length || a.name.localeCompare(b.name))
 );
 const cloudWords = computed(() => {
-  const max = Math.max(...landingTags.value.map(item => item.length), 1);
-  const min = Math.min(...landingTags.value.map(item => item.length), max);
+  const source = landingTags.value.slice(0, cloudLimit);
+  const max = Math.max(...source.map(item => item.length), 1);
+  const min = Math.min(...source.map(item => item.length), max);
   const gap = Math.max(max - min, 1);
 
-  return landingTags.value.map((item, index) => {
+  return source.map((item, index) => {
     const ratio = (item.length - min) / gap;
-    const fontSize = 16 + ratio * 22;
+    const fontSize = 15 + ratio * 26;
     const color = tagColor.value[index % tagColor.value.length];
+    const levels = ["muted", "normal", "strong"] as const;
+    const level = levels[Math.min(Math.floor(ratio * levels.length), levels.length - 1)];
 
     return {
       ...item,
+      level,
       style: {
         fontSize: `${fontSize}px`,
         color: color.text,
-        textShadow: "0 8px 18px rgba(148, 163, 184, 0.12)",
+        fontWeight: level === "strong" ? 700 : level === "normal" ? 600 : 500,
+        opacity: `${0.72 + ratio * 0.28}`,
+        textShadow: "0 10px 22px rgba(148, 163, 184, 0.14)",
+        transform: `translateY(${(index % 4) * 4 - 6}px)`,
       },
     };
   });
 });
+const visibleLandingTags = computed(() =>
+  expandLandingTags.value ? landingTags.value : landingTags.value.slice(0, landingTagInitialLimit)
+);
+const hiddenLandingTagCount = computed(() => Math.max(landingTags.value.length - landingTagInitialLimit, 0));
+const toggleLandingTags = () => {
+  expandLandingTags.value = !expandLandingTags.value;
+};
 
 const syncSelectedTag = () => {
   if (typeof window === "undefined") return;
@@ -163,22 +180,26 @@ onUnmounted(() => {
         <a
           v-for="item in cloudWords"
           :key="`cloud-${item.name}`"
-          :class="[ns.e('cloud-item'), ns.join('pointer')]"
+          :class="[ns.e('cloud-item'), ns.is(item.level, true), ns.join('pointer')]"
           :style="item.style"
           :aria-label="item.name"
           @click="handleSwitchTag(item.name)"
         >
-          {{ item.name }}
+          <span>{{ item.name }}</span>
+          <span :class="ns.e('cloud-count')">{{ item.length }}</span>
         </a>
       </div>
       <div v-else :class="ns.m('empty')" :aria-label="tagConfig.emptyLabel">{{ tagConfig.emptyLabel }}</div>
     </section>
 
     <section :class="ns.e('landing-panel')">
-      <h3 :class="ns.e('landing-title')">全部标签</h3>
-      <div v-if="landingTags.length" :class="ns.e('list')" :aria-label="t('tk.tagCard.listLabel')">
+      <div :class="ns.e('landing-header')">
+        <h3 :class="ns.e('landing-title')">全部标签</h3>
+        <span :class="ns.e('landing-meta')">共 {{ landingTags.length }} 个</span>
+      </div>
+      <div v-if="landingTags.length" :class="[ns.e('list'), ns.e('landing-list')]" :aria-label="t('tk.tagCard.listLabel')">
         <a
-          v-for="(item, index) in landingTags"
+          v-for="(item, index) in visibleLandingTags"
           :key="item.name"
           :style="getTagStyle(index)"
           @click="handleSwitchTag(item.name)"
@@ -189,6 +210,14 @@ onUnmounted(() => {
           <span class="num">{{ item.length }}</span>
         </a>
       </div>
+      <button
+        v-if="hiddenLandingTagCount > 0"
+        type="button"
+        :class="[ns.e('landing-toggle'), ns.join('pointer')]"
+        @click="toggleLandingTags"
+      >
+        {{ expandLandingTags ? "收起标签" : `展开剩余 ${hiddenLandingTagCount} 个标签` }}
+      </button>
       <div v-else :class="ns.m('empty')" :aria-label="tagConfig.emptyLabel">{{ tagConfig.emptyLabel }}</div>
     </section>
   </div>
