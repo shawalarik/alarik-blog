@@ -424,7 +424,7 @@ export default defineConfig({
           // { text: "风险链接提示页", link: "/risk-link?target=https://vp.teek.top" },
           { text: "分类页", link: "/categories" },
           { text: "标签页", link: "/tags" },
-          { text: "友链", link: "/resources/case" },
+          // { text: "友链", link: "/resources/case" },
           { text: "🙋 关于我", link: "/personal/" },
         ],
       },

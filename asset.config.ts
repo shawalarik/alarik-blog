@@ -47,7 +47,7 @@ export const assetConfig: AssetConfig = {
     },
     {
       key: "hero",
-      label: "头图",
+      label: "页首图",
       dir: "hero",
       source: "sequence",
       prefix: "hero",
