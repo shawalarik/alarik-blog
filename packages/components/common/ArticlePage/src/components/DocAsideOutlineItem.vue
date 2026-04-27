@@ -1,15 +1,26 @@
 <script setup lang="ts" name="DocAsideOutlineItem">
 import type { MenuItem } from "./outline";
+import { inject } from "vue";
 import { useNamespace } from "@teek/composables";
+import { articlePageOutlineKey } from "./outline";
 
 defineOptions({ name: "DocAsideOutlineItem" });
 
 defineProps<{ headers: MenuItem[]; root?: boolean }>();
 
 const ns = useNamespace("aside-outline-item");
+const customOutline = inject(articlePageOutlineKey, null);
 
-function onClick({ target: el }: Event) {
-  const id = (el as HTMLAnchorElement).href!.split("#")[1];
+function onClick(event: Event) {
+  const el = event.target as HTMLAnchorElement;
+  const id = el.href!.split("#")[1];
+
+  if (customOutline) {
+    event.preventDefault();
+    customOutline.scrollToLink(`#${decodeURIComponent(id)}`);
+    return;
+  }
+
   const heading = document.getElementById(decodeURIComponent(id));
   heading?.focus({ preventScroll: true });
 }

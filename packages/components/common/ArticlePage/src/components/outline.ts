@@ -1,7 +1,7 @@
 // From https://github.com/vuejs/vitepress/blob/main/src/client/theme-default/composables/outline.ts
 import type { Header } from "vitepress";
 import type { DefaultTheme } from "vitepress/theme";
-import type { Ref } from "vue";
+import type { InjectionKey, Ref } from "vue";
 import { getScrollOffset } from "vitepress";
 import { onMounted, onUnmounted, onUpdated } from "vue";
 import { useMediaQuery, useDebounce, useNamespace } from "@teek/composables";
@@ -12,9 +12,17 @@ const ignoreRE = /\b(?:VPBadge|header-anchor|footnote-ref|ignore-header)\b/;
 const resolvedHeaders: { element: HTMLHeadElement; link: string }[] = [];
 
 export type MenuItem = Omit<Header, "slug" | "children"> & {
-  element: HTMLHeadElement;
+  element?: HTMLHeadElement | null;
   children?: MenuItem[];
 };
+
+export type CustomOutlineContext = {
+  headers: Ref<MenuItem[]>;
+  getActiveLink: () => string | null;
+  scrollToLink: (link: string) => void;
+};
+
+export const articlePageOutlineKey: InjectionKey<CustomOutlineContext> = Symbol("articlePageOutline");
 
 export function resolveTitle(theme: DefaultTheme.Config): string {
   return (typeof theme.outline === "object" && !Array.isArray(theme.outline) && theme.outline.label) || "On this page";
@@ -178,13 +186,13 @@ function buildTree(data: MenuItem[], min: number, max: number): MenuItem[] {
       parent = stack[stack.length - 1];
     }
 
-    if (node.element.classList.contains("ignore-header") || (parent && "shouldIgnore" in parent)) {
+    if (node.element?.classList.contains("ignore-header") || (parent && "shouldIgnore" in parent)) {
       stack.push({ level: node.level, shouldIgnore: true });
       return;
     }
 
     if (node.level > max || node.level < min) return;
-    resolvedHeaders.push({ element: node.element, link: node.link });
+    if (node.element) resolvedHeaders.push({ element: node.element, link: node.link });
 
     if (parent) parent.children!.push(node);
     else result.push(node);

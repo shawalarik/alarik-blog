@@ -425,7 +425,7 @@ export default defineConfig({
           { text: "分类页", link: "/categories" },
           { text: "标签页", link: "/tags" },
           // { text: "友链", link: "/resources/case" },
-          { text: "🙋 关于我", link: "/personal/" },
+          { text: "🙋 关于我", link: "/personal" },
         ],
       },
     ],

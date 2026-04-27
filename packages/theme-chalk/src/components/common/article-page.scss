@@ -3,6 +3,7 @@
 @use "../../mixins/config" as *;
 
 @include b(article-page) {
+  --vp-header-anchor-symbol: "";
   margin: 25px auto;
   width: 100%;
 
@@ -83,6 +84,34 @@
     line-height: 22px;
     font-weight: 500;
   }
+
+  :is(h1, h2, h3, h4, h5, h6) {
+    .header-anchor {
+      position: absolute;
+      width: 0 !important;
+      height: 0 !important;
+      padding: 0 !important;
+      margin-left: 0 !important;
+      overflow: hidden !important;
+      color: transparent !important;
+      font-size: 0 !important;
+      line-height: 0 !important;
+      opacity: 0 !important;
+
+      &::before,
+      &::after {
+        content: "" !important;
+      }
+    }
+  }
+
+  @at-root .vp-doc .header-anchor::before {
+    content: "" !important;
+  }
+
+  @at-root .#{$namespace}-article-page .vp-doc .header-anchor::before {
+    content: "" !important;
+  }
 }
 
 @include b(aside-outline) {
@@ -98,6 +127,31 @@
     padding-left: 16px;
     font-size: 13px;
     font-weight: 500;
+  }
+
+  @include e(virtual) {
+    position: relative;
+    z-index: 1;
+  }
+
+  @include e(virtual-link) {
+    display: block;
+    line-height: 32px;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--vp-c-text-2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.3s;
+
+    &:hover {
+      font-weight: 700;
+    }
+
+    &.active {
+      color: getCssVar("theme-color");
+    }
   }
 
   @include m(marker) {

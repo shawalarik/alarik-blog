@@ -1,6 +1,7 @@
 import Teek from "vitepress-theme-teek";
 import TeekLayoutProvider from "./components/TeekLayoutProvider.vue";
 import GalleryPage from "./components/GalleryPage.vue";
+import PersonalPage from "./components/PersonalPage.vue";
 import LabTools from "./components/LabTools.vue";
 
 // Teek 本地主题包引用（与 Teek 在线主题包引用 二选一）
@@ -43,5 +44,6 @@ export default {
   enhanceApp({ app }) {
     app.component("LabTools", LabTools);
     app.component("GalleryPage", GalleryPage);
+    app.component("PersonalPage", PersonalPage);
   },
 };

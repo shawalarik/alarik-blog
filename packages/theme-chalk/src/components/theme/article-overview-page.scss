@@ -2,6 +2,17 @@
 @use "../../mixins/config" as *;
 
 @include b(article-overview) {
+  @include e(virtual-list) {
+    position: relative;
+    width: 100%;
+  }
+
+  @include e(virtual-section) {
+    position: absolute;
+    left: 0;
+    width: 100%;
+  }
+
   h2 {
     padding-top: 0;
     padding-bottom: 16px;
