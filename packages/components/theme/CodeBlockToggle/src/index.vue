@@ -25,6 +25,7 @@ const codeBlockConfig = getTeekConfigRef<CodeBlock>("codeBlock", {
 const documentAttribute = "code-block";
 const foldClass = "fold";
 const arrowClass = "code-arrow";
+const copyBoundDatasetKey = "teekCopyBound";
 
 watch(
   codeBlockConfig,
@@ -52,9 +53,12 @@ const initCodeBlock = () => {
   Array.from(modes).forEach(item => {
     const copyDom = item.querySelector<HTMLElement>(`.copy`);
 
-    copyDom?.addEventListener("click", () => {
-      codeBlockConfig.value.copiedDone?.(TkMessage);
-    });
+    if (copyDom && copyDom.dataset[copyBoundDatasetKey] !== "1") {
+      copyDom.dataset[copyBoundDatasetKey] = "1";
+      copyDom.addEventListener("click", () => {
+        codeBlockConfig.value.copiedDone?.(TkMessage);
+      });
+    }
 
     // 忽略部分 class：代码块父元素的 class 中包含 details、tk-vp-code 则跳过
     const className = item.parentElement?.className;

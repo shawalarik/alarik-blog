@@ -30,7 +30,6 @@ export const useClipboard = (timeout = 1500) => {
     if (size > 0) input.setSelectionRange(0, size); // 限制选择内容大小
     if (document.execCommand("copy")) {
       text.value = str;
-      document.execCommand("copy");
       copied.value = true;
       resetCopied();
     }
