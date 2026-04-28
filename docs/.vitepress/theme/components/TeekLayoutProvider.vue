@@ -58,7 +58,20 @@ const handleConfigSwitch = (config: TeekConfig, style: string) => {
 
 <template>
   <Teek.Layout>
-    <PageRefreshTip />
+    <template #teek-loading="{ loading }">
+      <Transition name="tk-fade" mode="out-in">
+        <div v-show="loading" class="blog-route-loading" aria-live="polite" aria-busy="true">
+          <div class="blog-route-loading__panel">
+            <div class="blog-route-loading__spinner" aria-hidden="true" />
+            <p class="blog-route-loading__text">正在为你准备精彩内容，请稍候片刻...</p>
+          </div>
+        </div>
+      </Transition>
+    </template>
+
+    <template #layout-top>
+      <PageRefreshTip />
+    </template>
 
     <template #teek-theme-enhance-bottom>
       <div :class="[ns, 'flx-align-center']">

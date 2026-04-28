@@ -2,7 +2,8 @@
 import { TkSegmented, TkMessage, magicIcon, isClient, useCommon } from "vitepress-theme-teek";
 import BaseTemplate from "@teek/components/theme/ThemeEnhance/src/components/BaseTemplate.vue";
 import { nextTick, ref, watch } from "vue";
-import { useClipboard, useStorage } from "@teek/composables";
+import { useClipboard, useStorage, useVpRouter } from "@teek/composables";
+import { useData } from "vitepress";
 import {
   teekDocConfig,
   teekBlogConfig,
@@ -48,6 +49,27 @@ const teekConfig = ref(teekBlogFullConfig);
 
 const { copy, copied } = useClipboard();
 const { isMobile } = useCommon();
+const { frontmatter } = useData();
+const { bindAfterRouteChange } = useVpRouter();
+
+const syncNavBarClass = async (style: string) => {
+  await nextTick();
+  if (!isClient) return;
+
+  const navDom = document.querySelector(".VPNavBar") as HTMLElement | null;
+  if (!navDom) return;
+
+  const isSpecialPage = !!frontmatter.value.tagsPage || !!frontmatter.value.categoriesPage;
+  const shouldEnable =
+    ["blog-full", "blog-body", "blog-card"].includes(style) && teekConfig.value.banner?.enabled !== false && !isSpecialPage;
+
+  if (shouldEnable) navDom.classList.add("full-img-nav-bar");
+  else navDom.classList.remove("full-img-nav-bar");
+
+  requestAnimationFrame(() => {
+    window.dispatchEvent(new Event("scroll"));
+  });
+};
 
 const update = async (style: string) => {
   if (style === "doc") teekConfig.value = teekDocConfig;
@@ -58,16 +80,7 @@ const update = async (style: string) => {
   if (style === "blog-card") teekConfig.value = teekBlogCardConfig;
 
   emit("switch", teekConfig.value, style);
-
-  await nextTick();
-
-  if (!isClient) return;
-  const navDom = document.querySelector(".VPNavBar") as HTMLElement;
-
-  // 兼容 Teek Banner 样式
-  if (["blog-full", "blog-body", "blog-card"].includes(style) && teekConfig.value.banner?.enabled !== false) {
-    navDom?.classList.add("full-img-nav-bar");
-  } else navDom?.classList.remove("full-img-nav-bar");
+  await syncNavBarClass(style);
 };
 
 watch(themeStyle, update, { immediate: true });
@@ -78,6 +91,10 @@ watch(
   },
   { immediate: true }
 );
+
+bindAfterRouteChange("config-switch-sync-navbar-class", async () => {
+  await syncNavBarClass(themeStyle.value);
+});
 
 const handleCopy = async () => {
   await copy(JSON.stringify(teekConfig.value, null, 2));

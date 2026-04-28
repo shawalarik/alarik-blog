@@ -1,7 +1,7 @@
 <script setup lang="ts" name="Home">
 import type { TeekConfig } from "@teek/config";
 import type { TkHomePostListInstance } from "@teek/components";
-import { computed, onMounted, onUnmounted, provide, ref, watch } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 import { useData } from "vitepress";
 import { useNamespace, useLocale, useVpRouter } from "@teek/composables";
 import { useTeekConfig, usePageState } from "@teek/components/theme/ConfigProvider";
@@ -66,6 +66,17 @@ const categoryPageTitle = computed(() => frontmatter.value.title || "文章分�
 const categoryResultTitle = computed(() => (selectedCategory.value ? `分类：${selectedCategory.value}` : categoryPageTitle.value));
 const tagPageTitle = computed(() => frontmatter.value.title || "文章标签");
 const tagResultTitle = computed(() => (selectedTag.value ? `标签：${selectedTag.value}` : tagPageTitle.value));
+const syncNavBarAfterEnter = async () => {
+  if (typeof window === "undefined") return;
+  await nextTick();
+
+  const navDom = document.querySelector(".VPNavBar") as HTMLElement | null;
+  if (navDom && (isCategoriesPage.value || isTagsPage.value)) navDom.classList.remove("full-img-nav-bar");
+
+  requestAnimationFrame(() => {
+    window.dispatchEvent(new Event("scroll"));
+  });
+};
 const getAssetImage = (dir: string, prefix: string, totalCount: unknown, seedSource: string, fallbackDir?: string, fallbackCount?: unknown) => {
   const cdnBase = assetMeta.value.cdnBase || "";
   if (!cdnBase) return "";
@@ -107,6 +118,7 @@ onMounted(() => {
   ensureRouteQueryObserver();
   syncSelectedCategory();
   syncSelectedTag();
+  syncNavBarAfterEnter();
   window.addEventListener("popstate", syncSelectedCategory);
   window.addEventListener("popstate", syncSelectedTag);
   window.addEventListener(routeQueryChangeEvent, syncSelectedCategory);
@@ -117,6 +129,7 @@ watch(() => route.path, syncSelectedCategory, { immediate: true });
 watch(() => route.path, syncSelectedTag, { immediate: true });
 bindAfterRouteChange("home-route-query-sync", syncSelectedCategory);
 bindAfterRouteChange("home-tag-route-query-sync", syncSelectedTag);
+bindAfterRouteChange("home-navbar-fix", syncNavBarAfterEnter);
 
 onUnmounted(() => {
   window.removeEventListener("popstate", syncSelectedCategory);
