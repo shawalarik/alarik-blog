@@ -1,0 +1,50 @@
+name: Deploy VitePress Site to Tencent Cloud
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # ========== 第一步：禁用 LFS ==========
+      - name: Checkout code (Disable LFS)
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+          token: ${{ secrets.GH_TOKEN }}  # 使用你的 Token
+          
+      - name: Completely Uninstall Git LFS
+        run: |
+          git lfs uninstall || true
+          rm -f .gitattributes
+          git config --global filter.lfs.required false
+          
+      # ========== 第二步：pnpm 构建 ==========
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Enable pnpm
+        run: corepack enable pnpm
+        
+      - name: Install dependencies and Build
+        run: |
+          pnpm install
+          pnpm stub
+          pnpm docs:build
+          
+      # ========== 第三步：部署到腾讯云 ==========
+      - name: Deploy to Tencent Cloud Server
+        uses: easingthemes/ssh-deploy@v5.0.0
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          ARGS: "-rlgoDzvc --delete"
+          SOURCE: ".vitepress/dist/"
+          REMOTE_HOST: ${{ secrets.SERVER_HOST }}
+          REMOTE_USER: ${{ secrets.SERVER_USER }}
+          TARGET: "/opt/1panel/www/sites/docs.alariks.com/index/"
