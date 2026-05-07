@@ -10,41 +10,35 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      # ========== 第一步：禁用 LFS ==========
       - name: Checkout code (Disable LFS)
         uses: actions/checkout@v4
         with:
           lfs: false
+          token: ${{ secrets.GH_TOKEN }}  # 使用你的 Token
           
       - name: Completely Uninstall Git LFS
         run: |
           git lfs uninstall || true
-          
           rm -f .gitattributes
-          
-          git lfs prune || true
-          
-          git config --global filter.lfs.clean "git-lfs clean %f"
-          git config --global filter.lfs.smudge "git-lfs smudge %f"
-          git config --global filter.lfs.process "git-lfs filter-process"
           git config --global filter.lfs.required false
           
-          echo "=== Git LFS Status ==="
-          git lfs version || echo "✅ LFS 已完全卸载"
-
+      # ========== 第二步：pnpm 构建 ==========
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           
-      - name: Enable pnpm (Node.js 16+ 自带 corepack)
+      - name: Enable pnpm
         run: corepack enable pnpm
-
+        
       - name: Install dependencies and Build
         run: |
           pnpm install
           pnpm stub
           pnpm docs:build
-
+          
+      # ========== 第三步：部署到腾讯云 ==========
       - name: Deploy to Tencent Cloud Server
         uses: easingthemes/ssh-deploy@v5.0.0
         env:
