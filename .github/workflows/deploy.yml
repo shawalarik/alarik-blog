@@ -8,19 +8,42 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-  
+    
     steps:
-      - name: Checkout code
+      - name: Checkout code (Disable LFS)
         uses: actions/checkout@v4
+        with:
+          lfs: false
+          
+      - name: Completely Uninstall Git LFS
+        run: |
+          git lfs uninstall || true
+          
+          rm -f .gitattributes
+          
+          git lfs prune || true
+          
+          git config --global filter.lfs.clean "git-lfs clean %f"
+          git config --global filter.lfs.smudge "git-lfs smudge %f"
+          git config --global filter.lfs.process "git-lfs filter-process"
+          git config --global filter.lfs.required false
+          
+          echo "=== Git LFS Status ==="
+          git lfs version || echo "✅ LFS 已完全卸载"
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          
+      - name: Enable pnpm (Node.js 16+ 自带 corepack)
+        run: corepack enable pnpm
 
       - name: Install dependencies and Build
         run: |
-          npm install
-          npm run build # ✅ 已修正为你项目中的构建命令
+          pnpm install
+          pnpm stub
+          pnpm docs:build
 
       - name: Deploy to Tencent Cloud Server
         uses: easingthemes/ssh-deploy@v5.0.0
