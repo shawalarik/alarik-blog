@@ -27,7 +27,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
+          cache: 'pnpm'
           
       - name: Enable pnpm
         run: corepack enable pnpm
@@ -36,6 +37,7 @@ jobs:
         run: |
           pnpm install
           pnpm stub
+          export NODE_OPTIONS=--max-old-space-size=8192
           pnpm docs:build
           
       # ========== 第三步：部署到腾讯云 ==========
