@@ -30,8 +30,11 @@ jobs:
           node-version: '20'
           cache: 'pnpm'
           
-      - name: Enable pnpm
-        run: corepack enable pnpm
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4  # 使用官方 action 确保 pnpm 可用
+        with:
+          version: 8 # 指定一个稳定的 pnpm 版本，或者删除这行让它自动检测
+          run_install: false # 我们稍后手动运行 install
         
       - name: Install dependencies and Build
         run: |
