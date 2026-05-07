@@ -44,7 +44,7 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           ARGS: "-rlgoDzvc --delete"
-          SOURCE: ".vitepress/dist/"
+          SOURCE: "docs/.vitepress/dist/"
           REMOTE_HOST: ${{ secrets.SERVER_HOST }}
           REMOTE_USER: ${{ secrets.SERVER_USER }}
           TARGET: "/opt/1panel/www/sites/docs.alariks.com/index/"
